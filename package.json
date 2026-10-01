@@ -5,9 +5,7 @@
   "description": "Jabali Trails Africa — Guided Expeditions in Uganda & East Africa. Marketing & Real-Time Stripe Booking Platform.",
   "scripts": {
     "dev": "next dev -H 0.0.0.0 -p 3000",
-    "build": "node scripts/build.mjs",
-    "build:pages": "NEXT_OUTPUT_MODE=export node scripts/build.mjs",
-    "build:server": "VERCEL=1 node scripts/build.mjs",
+    "build": "next build",
     "start": "next start -H 0.0.0.0 -p 3000",
     "lint": "next lint"
   },

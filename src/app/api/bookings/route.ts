@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { findBooking, listBookings, updateBookingPaymentStatus } from '@/lib/booking-store';
+import {
+  findBooking,
+  listBookings,
+  modifyBookingDetails,
+  updateBookingPaymentStatus,
+} from '@/lib/booking-store';
 import { getStripeServer, isStripeConfigured } from '@/lib/stripe';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -12,7 +19,7 @@ export async function GET(request: NextRequest) {
 
   if (!identifier) {
     return NextResponse.json({
-      bookings: listBookings().slice(0, 20),
+      bookings: listBookings(),
     });
   }
 
@@ -45,20 +52,32 @@ export async function GET(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { identifier, status } = body;
+    const { identifier, status, departureDate, guests, safariStyle, accommodationTier } = body;
 
-    if (!identifier || !status) {
-      return NextResponse.json({ error: 'Missing identifier or status' }, { status: 400 });
+    if (!identifier) {
+      return NextResponse.json({ error: 'Missing booking identifier' }, { status: 400 });
     }
 
-    const updated = updateBookingPaymentStatus(identifier, status);
+    let updated;
+    if (departureDate || typeof guests === 'number' || safariStyle || accommodationTier) {
+      updated = modifyBookingDetails(identifier, {
+        departureDate,
+        guests,
+        safariStyle,
+        accommodationTier,
+        status,
+      });
+    } else if (status) {
+      updated = updateBookingPaymentStatus(identifier, status);
+    }
+
     if (!updated) {
       return NextResponse.json({ error: 'Booking record not found' }, { status: 404 });
     }
 
     return NextResponse.json({
       booking: updated,
-      message: `Booking ${updated.bookingReference} updated to ${status}`,
+      message: `Booking ${updated.bookingReference} updated successfully.`,
     });
   } catch (error) {
     console.error('Update booking error:', error);

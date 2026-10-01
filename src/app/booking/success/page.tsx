@@ -1,28 +1,30 @@
 'use client';
 
 import React, { useEffect, useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { BookingRecord } from '@/lib/pricing';
 import {
   fetchBookingUniversal,
   triggerWebhookUniversal,
+  saveLocalBooking,
 } from '@/lib/client-booking-engine';
 import {
   CheckCircle2,
   ShieldCheck,
   Printer,
   Calendar,
-  MapPin,
-  FileCheck2,
   Mail,
   ArrowRight,
   Webhook,
   Loader2,
+  XCircle,
+  Lock,
 } from 'lucide-react';
 
 function BookingSuccessContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const ref = searchParams.get('ref') || '';
   const sessionId = searchParams.get('session_id') || '';
   const paymentIntent = searchParams.get('payment_intent') || '';
@@ -33,11 +35,17 @@ function BookingSuccessContent() {
   const [webhookResult, setWebhookResult] = useState<string | null>(null);
   const [testingWebhook, setTestingWebhook] = useState(false);
 
+  // Reschedule / Manage Booking State
+  const [newDepartureDate, setNewDepartureDate] = useState('');
+  const [managing, setManaging] = useState(false);
+  const [manageMessage, setManageMessage] = useState<string | null>(null);
+
   useEffect(() => {
     fetchBookingUniversal({ ref, sessionId, paymentIntent })
       .then((found) => {
         if (found) {
           setBooking(found);
+          setNewDepartureDate(found.departureDate);
         }
       })
       .finally(() => setLoading(false));
@@ -47,7 +55,7 @@ function BookingSuccessContent() {
     setTestingWebhook(true);
     setWebhookResult(null);
     try {
-      const bookingRef = booking?.bookingReference || ref || 'JBL-2026-DEMO';
+      const bookingRef = booking?.bookingReference || ref || 'JBL-2026-8419';
       const json = await triggerWebhookUniversal({
         bookingReference: bookingRef,
         sessionId: sessionId || booking?.stripeSessionId || 'cs_test_verified',
@@ -67,6 +75,64 @@ function BookingSuccessContent() {
     }
   };
 
+  const handleRescheduleDate = async () => {
+    if (!booking || !newDepartureDate || newDepartureDate === booking.departureDate) return;
+    setManaging(true);
+    setManageMessage(null);
+    try {
+      const res = await fetch('/api/bookings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          identifier: booking.bookingReference,
+          departureDate: newDepartureDate,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.booking) {
+          saveLocalBooking(data.booking);
+          setBooking(data.booking);
+          setManageMessage(
+            `Departure date transferred to ${data.booking.departureDate} (${data.booking.pricing.seasonName}).`
+          );
+        }
+      }
+    } catch {
+      setManageMessage('Unable to reschedule date right now.');
+    } finally {
+      setManaging(false);
+    }
+  };
+
+  const handleCancelBooking = async () => {
+    if (!booking) return;
+    setManaging(true);
+    setManageMessage(null);
+    try {
+      const res = await fetch('/api/bookings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          identifier: booking.bookingReference,
+          status: 'cancelled',
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.booking) {
+          saveLocalBooking(data.booking);
+          setBooking(data.booking);
+          setManageMessage(
+            `Reservation ${data.booking.bookingReference} cancelled and ${data.booking.guests} UWA permits released back to the sector pool.`
+          );
+        }
+      }
+    } finally {
+      setManaging(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-parchment text-canopy">
@@ -76,7 +142,9 @@ function BookingSuccessContent() {
     );
   }
 
-  const isInquiry = mode === 'inquiry' || booking?.status === 'inquiry_hold';
+  const isCancelled = booking?.status === 'cancelled';
+  const isInquiry =
+    !isCancelled && (mode === 'inquiry' || booking?.status === 'inquiry_hold');
   const displayRef = booking?.bookingReference || ref || 'JBL-2026-8419';
   const displayDocket = booking?.uwaPermitDocketNumber || 'UWA-BW-2026-594820';
 
@@ -87,17 +155,31 @@ function BookingSuccessContent() {
         <div className="bg-canopy text-parchment rounded-3xl p-8 sm:p-12 shadow-elevated border border-acacia/30 relative overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 border-b border-white/15">
             <div className="flex items-start gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+              <div
+                className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${
+                  isCancelled
+                    ? 'bg-red-500/20 border border-red-400/40'
+                    : 'bg-emerald-500/20 border border-emerald-400/40'
+                }`}
+              >
+                {isCancelled ? (
+                  <XCircle className="w-8 h-8 text-red-400" />
+                ) : (
+                  <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+                )}
               </div>
               <div>
                 <span className="font-mono-tech text-xs uppercase tracking-widest text-acacia">
-                  {isInquiry
+                  {isCancelled
+                    ? 'RESERVATION CANCELLED · PERMITS RELEASED'
+                    : isInquiry
                     ? '48-HOUR PERMIT INQUIRY HOLD REGISTERED'
                     : 'STRIPE PAYMENT VERIFIED · UWA PERMIT LOCKED'}
                 </span>
                 <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-white mt-1">
-                  {isInquiry
+                  {isCancelled
+                    ? 'Reservation Cancelled'
+                    : isInquiry
                     ? 'Your Expedition Dates Are Held!'
                     : 'See You in the Equatorial Mist.'}
                 </h1>
@@ -146,7 +228,9 @@ function BookingSuccessContent() {
               </span>
               <span className="font-mono-tech text-sm font-bold text-white mt-1.5 flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                {isInquiry
+                {isCancelled
+                  ? 'CANCELLED'
+                  : isInquiry
                   ? '48h Hold ($0 Charged)'
                   : `PAID ($${(booking?.pricing?.payableNowUsd || 4250).toLocaleString()} USD)`}
               </span>
@@ -241,15 +325,87 @@ function BookingSuccessContent() {
                 </div>
               )}
               <div className="pt-3 border-t border-canopy/15 flex justify-between text-base font-bold text-canopy">
-                <span>Amount Settled Today</span>
+                <span>{isInquiry ? 'Amount Payable to Convert Hold' : 'Amount Settled'}</span>
                 <span className="font-mono-tech text-terracotta">
-                  ${isInquiry ? 0 : booking.pricing.payableNowUsd.toLocaleString()} USD
+                  ${booking.pricing.payableNowUsd.toLocaleString()} USD
                 </span>
               </div>
-              {booking.pricing.remainingBalanceUsd > 0 && !isInquiry && (
+              {booking.pricing.remainingBalanceUsd > 0 && (
                 <div className="flex justify-between text-xs font-mono-tech text-bark-muted">
                   <span>Remaining Balance (Due 60 Days Prior to Departure):</span>
                   <span>${booking.pricing.remainingBalanceUsd.toLocaleString()} USD</span>
+                </div>
+              )}
+            </div>
+
+            {/* Interactive Manage Booking Controls (Reschedule / Convert Hold / Cancel) */}
+            <div className="no-print p-5 rounded-2xl bg-white border border-canopy/15 space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-mono-tech text-xs uppercase font-semibold text-canopy flex items-center gap-1.5">
+                  <Calendar className="w-4 h-4 text-terracotta" />
+                  Manage Reservation &amp; UWA Permit Dates
+                </span>
+                {isInquiry && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      router.push(
+                        `/booking/checkout?ref=${encodeURIComponent(
+                          booking.bookingReference
+                        )}&session_id=cs_test_convert_${Date.now()}`
+                      )
+                    }
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-terracotta hover:bg-terracotta-hover text-white text-xs font-semibold shadow-sm"
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>
+                      Pay ${booking.pricing.payableNowUsd.toLocaleString()} via Stripe Now
+                    </span>
+                  </button>
+                )}
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3">
+                <div className="flex-1">
+                  <label
+                    htmlFor="reschedule-date"
+                    className="block text-[11px] font-mono-tech uppercase text-bark-muted mb-1"
+                  >
+                    Transfer Departure Date (Free up to 60 Days Prior)
+                  </label>
+                  <input
+                    id="reschedule-date"
+                    type="date"
+                    min="2026-10-02"
+                    max="2027-12-31"
+                    value={newDepartureDate}
+                    onChange={(e) => setNewDepartureDate(e.target.value)}
+                    className="w-full rounded-xl bg-parchment-light border border-canopy/20 px-3.5 py-2 text-xs font-mono-tech text-canopy"
+                  />
+                </div>
+                <button
+                  type="button"
+                  disabled={managing || newDepartureDate === booking.departureDate}
+                  onClick={handleRescheduleDate}
+                  className="px-4 py-2.5 rounded-xl bg-canopy hover:bg-canopy-moss disabled:opacity-50 text-parchment text-xs font-semibold transition-all"
+                >
+                  {managing ? 'Updating...' : 'Transfer Permit Date'}
+                </button>
+                {!isCancelled && (
+                  <button
+                    type="button"
+                    disabled={managing}
+                    onClick={handleCancelBooking}
+                    className="px-4 py-2.5 rounded-xl border border-red-300 hover:bg-red-50 text-red-700 text-xs font-semibold transition-all"
+                  >
+                    Cancel &amp; Release Permits
+                  </button>
+                )}
+              </div>
+
+              {manageMessage && (
+                <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 font-mono-tech">
+                  {manageMessage}
                 </div>
               )}
             </div>
@@ -297,10 +453,10 @@ function BookingSuccessContent() {
         {/* Next Actions */}
         <div className="no-print flex flex-wrap items-center justify-between gap-4">
           <Link
-            href="/expeditions"
+            href="/admin"
             className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-canopy/20 text-canopy text-sm font-semibold hover:bg-parchment-dark transition-all"
           >
-            <span>Browse More Expeditions</span>
+            <span>Open Admin Operations Console</span>
           </Link>
           <Link
             href="/"

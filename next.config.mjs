@@ -1,12 +1,5 @@
-const isStaticExport = process.env.NEXT_OUTPUT_MODE === 'export';
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  ...(isStaticExport ? { output: 'export' } : {}),
-  basePath,
-  assetPrefix: basePath || undefined,
-  trailingSlash: true,
   optimizeFonts: false,
   images: {
     unoptimized: true,
@@ -20,6 +13,19 @@ const nextConfig = {
         hostname: 'plus.unsplash.com',
       },
     ],
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+        ],
+      },
+    ];
   },
 };
 

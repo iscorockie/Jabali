@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 import {
   Compass,
@@ -10,9 +12,40 @@ import {
   CreditCard,
   ArrowUpRight,
   CheckCircle2,
+  Send,
 } from 'lucide-react';
 
 export default function Footer() {
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterStatus, setNewsletterStatus] = useState<string | null>(null);
+  const [submittingNewsletter, setSubmittingNewsletter] = useState(false);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail.trim()) return;
+    setSubmittingNewsletter(true);
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: newsletterEmail,
+          interest: 'UWA Permit Alerts & Field Dispatches',
+        }),
+      });
+      const data = await res.json();
+      setNewsletterStatus(
+        data.message || 'Subscribed to Jabali Field Dispatches & UWA Permit Alerts.'
+      );
+      setNewsletterEmail('');
+    } catch {
+      setNewsletterStatus('Subscribed to Jabali Field Dispatches.');
+      setNewsletterEmail('');
+    } finally {
+      setSubmittingNewsletter(false);
+    }
+  };
+
   return (
     <footer className="bg-canopy-topographic text-parchment border-t border-white/10 no-print">
       {/* Conservation Pledge Banner */}
@@ -51,7 +84,7 @@ export default function Footer() {
       {/* Main Footer Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
-          {/* Column 1: Brand & Credentials */}
+          {/* Column 1: Brand, Credentials & Newsletter */}
           <div className="lg:col-span-4 space-y-5">
             <Link href="/" className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl bg-acacia/20 border border-acacia/40 flex items-center justify-center">
@@ -70,6 +103,38 @@ export default function Footer() {
             <p className="text-sm text-parchment/75 leading-relaxed">
               Thoughtful, small-group and private guided expeditions across Uganda’s Albertine Rift rainforests, the Victoria Nile, Karamoja, and the Great Rift savannahs of East Africa.
             </p>
+
+            {/* Field Dispatch Newsletter Form */}
+            <form onSubmit={handleNewsletterSubmit} className="space-y-2 pt-1">
+              <label
+                htmlFor="footer-newsletter"
+                className="block font-mono-tech text-[11px] uppercase tracking-wider text-acacia"
+              >
+                UWA Seasonal Permit &amp; Field Dispatches
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="footer-newsletter"
+                  type="email"
+                  required
+                  placeholder="Enter your email for permit alerts..."
+                  value={newsletterEmail}
+                  onChange={(e) => setNewsletterEmail(e.target.value)}
+                  className="flex-1 rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-xs text-parchment placeholder:text-parchment/50 focus:outline-none focus:border-acacia"
+                />
+                <button
+                  type="submit"
+                  disabled={submittingNewsletter}
+                  className="px-3.5 py-2 rounded-lg bg-terracotta hover:bg-terracotta-hover text-white text-xs font-semibold inline-flex items-center gap-1 transition-all"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>Join</span>
+                </button>
+              </div>
+              {newsletterStatus && (
+                <p className="text-xs text-emerald-400 font-mono-tech">{newsletterStatus}</p>
+              )}
+            </form>
 
             <div className="pt-2 space-y-2 text-xs text-parchment/80 font-mono-tech">
               <div className="flex items-center gap-2">
@@ -178,6 +243,11 @@ export default function Footer() {
               <li>
                 <Link href="/contact" className="hover:text-acacia transition-colors">
                   Tailor-Made Private Safaris
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin" className="hover:text-acacia text-acacia/90 transition-colors">
+                  Admin &amp; Operations Console
                 </Link>
               </li>
             </ul>

@@ -2,19 +2,16 @@ import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { EXPEDITIONS, getExpeditionBySlug } from '@/data/expeditions';
+import ExpeditionQuickBookSidebar from '@/components/ExpeditionQuickBookSidebar';
 import {
   Calendar,
   Users,
   Mountain,
   MapPin,
-  ShieldCheck,
   CheckCircle2,
   XCircle,
-  ArrowRight,
   ArrowLeft,
-  Compass,
   Sparkles,
-  CreditCard,
 } from 'lucide-react';
 
 export function generateStaticParams() {
@@ -232,98 +229,9 @@ export default function ExpeditionDetailPage({
               </div>
             </div>
 
-            {/* Right 4 Columns: Sticky Booking & Permit Dossier Card */}
+            {/* Right 4 Columns: Interactive Live Booking & Permit Configurator */}
             <aside className="lg:col-span-4 lg:sticky lg:top-28 space-y-6">
-              <div className="bg-parchment-light rounded-2xl border-2 border-canopy/20 shadow-elevated overflow-hidden">
-                <div className="bg-canopy text-parchment p-6 space-y-2">
-                  <div className="flex items-center justify-between text-xs font-mono-tech text-acacia">
-                    <span>LIVE PERMIT &amp; STRIPE ENGINE</span>
-                    <span>{expedition.durationDays} DAYS</span>
-                  </div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-mono-tech text-3xl sm:text-4xl font-bold text-white">
-                      ${expedition.basePriceUsd.toLocaleString()}
-                    </span>
-                    <span className="text-xs text-parchment/75">/ guest (Peak Dry Season)</span>
-                  </div>
-                  <div className="text-xs text-emerald-300 font-mono-tech">
-                    Emerald Green Season (Apr–May, Nov): $
-                    {(expedition.basePriceUsd - expedition.greenSeasonDiscountUsd).toLocaleString()}
-                    /pp
-                  </div>
-                </div>
-
-                <div className="p-6 space-y-5">
-                  {/* Permit Callout */}
-                  <div className="p-4 rounded-xl bg-acacia-light border border-acacia/40 space-y-1.5">
-                    <div className="flex items-center justify-between text-xs font-mono-tech font-semibold text-canopy">
-                      <span className="flex items-center gap-1.5">
-                        <ShieldCheck className="w-4 h-4 text-terracotta" />
-                        UWA Permit Allocation
-                      </span>
-                      <span>
-                        {totalPermitUsd > 0 ? `+$${totalPermitUsd}/pp` : 'Included'}
-                      </span>
-                    </div>
-                    <p className="text-xs text-bark-muted leading-relaxed">
-                      {expedition.permitSummary}. Government-regulated permits are itemized transparently at checkout and locked immediately upon payment.
-                    </p>
-                  </div>
-
-                  {/* Key Specs */}
-                  <div className="space-y-2.5 text-xs border-y border-canopy/10 py-4">
-                    <div className="flex justify-between">
-                      <span className="text-bark-muted">Daily UWA Sector Quota:</span>
-                      <span className="font-mono-tech font-semibold text-canopy">
-                        {expedition.dailyPermitQuota} permits / family
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-bark-muted">Private 4x4 Upgrade:</span>
-                      <span className="font-mono-tech font-semibold text-canopy">
-                        +${expedition.privateVehicleUpgradePerPersonUsd}/pp
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-bark-muted">Prime Months:</span>
-                      <span className="font-mono-tech font-semibold text-canopy">
-                        {expedition.bestMonths.join(', ')}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-bark-muted">Stripe Product ID:</span>
-                      <span className="font-mono-tech text-[11px] text-bark-subtle">
-                        {expedition.stripeProductId}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Primary Booking Button */}
-                  <div className="space-y-3">
-                    <Link
-                      href={`/booking?expedition=${encodeURIComponent(expedition.id)}`}
-                      className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-terracotta hover:bg-terracotta-hover text-white font-semibold text-sm shadow-sm transition-all"
-                    >
-                      <Calendar className="w-4 h-4" />
-                      <span>Check Dates &amp; Book Online</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-
-                    <Link
-                      href={`/booking?expedition=${encodeURIComponent(expedition.id)}&mode=inquiry`}
-                      className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-canopy/25 hover:bg-canopy hover:text-parchment text-canopy font-semibold text-xs transition-all"
-                    >
-                      <Compass className="w-4 h-4" />
-                      <span>Place 48-Hour Permit Inquiry Hold</span>
-                    </Link>
-                  </div>
-
-                  <div className="pt-2 flex items-center justify-center gap-2 text-[11px] text-bark-muted font-mono-tech">
-                    <CreditCard className="w-3.5 h-3.5 text-canopy" />
-                    <span>Pay 30% Deposit + Permit or 100% via Stripe</span>
-                  </div>
-                </div>
-              </div>
+              <ExpeditionQuickBookSidebar expedition={expedition} />
             </aside>
           </div>
         </div>

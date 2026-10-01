@@ -1,15 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { updateBookingPaymentStatus } from '@/lib/booking-store';
+import {
+  listWebhookEvents,
+  recordWebhookEvent,
+  updateBookingPaymentStatus,
+} from '@/lib/booking-store';
 import { getStripeServer } from '@/lib/stripe';
 
-/**
- * Stripe Webhook Endpoint (`POST /api/webhooks/stripe`)
- * Handles `checkout.session.completed` and `payment_intent.succeeded` events.
- *
- * Local testing with Stripe CLI:
- *   stripe listen --forward-to localhost:3000/api/webhooks/stripe
- */
+export const dynamic = 'force-dynamic';
+
+export async function GET() {
+  return NextResponse.json({
+    events: listWebhookEvents(),
+  });
+}
+
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
   const signature = request.headers.get('stripe-signature');
@@ -17,6 +22,7 @@ export async function POST(request: NextRequest) {
 
   const stripe = getStripeServer();
   let event: Stripe.Event;
+  let verifiedMode: 'verified' | 'simulated_sandbox' = 'simulated_sandbox';
 
   try {
     if (
@@ -25,10 +31,9 @@ export async function POST(request: NextRequest) {
       webhookSecret &&
       !webhookSecret.includes('replace_with_your')
     ) {
-      // Official cryptographic webhook signature verification
       event = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret);
+      verifiedMode = 'verified';
     } else {
-      // Development / sandbox mode fallback when testing webhook payload locally
       event = JSON.parse(rawBody) as Stripe.Event;
     }
   } catch (err) {
@@ -37,11 +42,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: `Webhook Error: ${message}` }, { status: 400 });
   }
 
+  const processedAt = new Date().toISOString();
+
   try {
+    let bookingRef = 'UNKNOWN';
+    let stripeObjId = event.id;
+
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-        const bookingRef =
+        stripeObjId = session.id;
+        bookingRef =
           session.metadata?.bookingReference || session.client_reference_id || session.id;
 
         const updated = updateBookingPaymentStatus(bookingRef, 'paid', {
@@ -57,7 +68,8 @@ export async function POST(request: NextRequest) {
 
       case 'payment_intent.succeeded': {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        const bookingRef = paymentIntent.metadata?.bookingReference || paymentIntent.id;
+        stripeObjId = paymentIntent.id;
+        bookingRef = paymentIntent.metadata?.bookingReference || paymentIntent.id;
 
         const updated = updateBookingPaymentStatus(bookingRef, 'paid', {
           stripePaymentIntentId: paymentIntent.id,
@@ -73,7 +85,8 @@ export async function POST(request: NextRequest) {
       case 'checkout.session.expired':
       case 'payment_intent.payment_failed': {
         const obj = event.data.object as { metadata?: { bookingReference?: string }; id: string };
-        const bookingRef = obj.metadata?.bookingReference || obj.id;
+        stripeObjId = obj.id;
+        bookingRef = obj.metadata?.bookingReference || obj.id;
         updateBookingPaymentStatus(bookingRef, 'cancelled');
         console.log(`⚠️ [Stripe Webhook] Payment cancelled/expired for ${bookingRef}`);
         break;
@@ -83,10 +96,20 @@ export async function POST(request: NextRequest) {
         console.log(`ℹ️ [Stripe Webhook] Unhandled event type: ${event.type}`);
     }
 
+    const logEntry = recordWebhookEvent({
+      id: event.id || `evt_${Date.now()}`,
+      eventType: event.type,
+      bookingReference: bookingRef,
+      stripeObjectId: stripeObjId,
+      status: verifiedMode,
+      processedAt,
+    });
+
     return NextResponse.json({
       received: true,
       eventType: event.type,
-      processedAt: new Date().toISOString(),
+      processedAt,
+      logEntry,
     });
   } catch (err) {
     console.error('Webhook handler processing error:', err);

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { EXPEDITIONS, getExpeditionById } from '@/data/expeditions';
-import { getMonthAvailability } from '@/lib/booking-store';
+import { getMonthAvailability, setCustomDatePermitQuota } from '@/lib/booking-store';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -24,4 +26,27 @@ export async function GET(request: NextRequest) {
     authorityNote:
       'Mountain gorilla ($800) and chimpanzee ($250) permits are regulated by the Uganda Wildlife Authority (UWA) with a strict cap of 8 trekkers per habituated gorilla family per day.',
   });
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { expeditionId, date, permits } = body;
+    if (!expeditionId || !date || typeof permits !== 'number') {
+      return NextResponse.json(
+        { error: 'Missing expeditionId, date, or permits count' },
+        { status: 400 }
+      );
+    }
+    const overrides = setCustomDatePermitQuota(expeditionId, date, permits);
+    return NextResponse.json({
+      success: true,
+      expeditionId,
+      date,
+      permits,
+      overrides,
+    });
+  } catch {
+    return NextResponse.json({ error: 'Unable to update permit quota' }, { status: 500 });
+  }
 }
