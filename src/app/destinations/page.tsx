@@ -3,7 +3,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { DESTINATIONS, EXPEDITIONS } from '@/data/expeditions';
+import { withBasePath } from '@/lib/base-path';
 import InteractiveUgandaMap from '@/components/InteractiveUgandaMap';
+import DossierNav from '@/components/DossierNav';
+import Reveal from '@/components/ui/Reveal';
 import {
   MapPin,
   Compass,
@@ -150,34 +153,50 @@ export default function DestinationsPage() {
   return (
     <div className="min-h-screen bg-surface bg-topographic">
       {/* Hero */}
-      <section className="relative bg-canopy text-parchment py-16 sm:py-24 overflow-hidden">
-        <div className="absolute inset-0 opacity-35">
+      <section className="relative isolate overflow-hidden bg-canopy text-parchment grain">
+        <div className="absolute inset-0 opacity-40">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/queen-elizabeth-savannah.webp"
-            alt="Queen Elizabeth National Park Uganda savannah and crater lakes"
-            className="w-full h-full object-cover"
+            src={withBasePath('/images/queen-elizabeth-savannah.webp')}
+            alt="Queen Elizabeth National Park savannah and crater lakes"
+            className="anim-ken h-full w-full object-cover"
+            decoding="async"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-canopy via-canopy/85 to-canopy/65" />
+          <div className="absolute inset-0 bg-gradient-to-r from-canopy via-canopy/90 to-canopy/60" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="wrap relative z-10 py-16 sm:py-24">
           <div className="max-w-3xl space-y-4">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-acacia/20 border border-acacia/40 text-acacia font-label text-xs">
-              <Compass className="w-3.5 h-3.5" />
-              LIVE FIELD SECTORS · SEASONALITY &amp; UWA PERMIT TELEMETRY
+            <span className="chip chip-onPanel !border-acacia/40 !bg-acacia/15 !text-acacia">
+              <Compass className="h-3.5 w-3.5" />
+              Live field sectors · seasonality &amp; UWA permit telemetry
             </span>
-            <h1 className="font-display text-4xl sm:text-6xl font-semibold tracking-tight">
-              Destinations &amp; National Parks
+            <h1 className="text-hero font-display font-semibold text-parchment">
+              Destinations &amp; national parks
             </h1>
-            <p className="text-parchment/85 text-base sm:text-lg leading-relaxed">
-              Explore our six signature conservation territories across Uganda and East Africa. Filter by ecosystem, inspect month-by-month climate &amp; wildlife conditions, and verify live UWA permit availability for each park below.
+            <p className="max-w-2xl text-base leading-relaxed text-parchment/85 sm:text-lg">
+              Six conservation territories from the Albertine Rift rainforest to the Karamoja
+              frontier. Filter by ecosystem, inspect month-by-month conditions, and verify live
+              UWA permit availability for each park before you commit a trek date.
             </p>
+            <div className="flex flex-wrap gap-3 pt-1">
+              <Link href="/booking" className="btn btn-primary">
+                <Calendar className="h-4 w-4" />
+                Check permit availability
+              </Link>
+              <a href="#dest-bwindi" className="btn btn-onPanel">
+                Jump to Bwindi
+                <ArrowRight className="h-4 w-4 text-acacia" />
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
+      <DossierNav sections={DESTINATIONS.map((d) => ({ id: d.slug, label: d.name.replace(' National Park', '') }))} />
+
       {/* Interactive Seasonality & Live Permit Telemetry Bar */}
-      <section className="sticky top-20 z-30 bg-surface-raised/95 backdrop-blur-md border-b border-line/15 py-4 shadow-sm">
+      <section className="sticky top-[var(--header-h)] z-30 bg-surface-raised/95 backdrop-blur-md border-b border-line/15 py-4 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
             {/* Region Filter Pills */}
@@ -304,19 +323,22 @@ export default function DestinationsPage() {
                 <article
                   key={dest.id}
                   id={dest.slug}
-                  className="scroll-mt-32 bg-surface-raised rounded-3xl border border-line/15 shadow-card overflow-hidden"
+                  className="card scroll-mt-36 overflow-hidden rounded-3xl"
                 >
                   <div className="grid grid-cols-1 lg:grid-cols-12">
                     {/* Image Column */}
                     <div
-                      className={`lg:col-span-5 relative min-h-[340px] lg:min-h-full bg-canopy ${
+                      className={`group relative min-h-[340px] lg:col-span-5 lg:min-h-full bg-canopy ${
                         index % 2 === 1 ? 'lg:order-2' : ''
                       }`}
                     >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={dest.heroImage}
                         alt={dest.name}
-                        className="absolute inset-0 w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-canopy/90 via-canopy/25 to-transparent" />
 
@@ -496,7 +518,11 @@ export default function DestinationsPage() {
       </section>
 
       {/* Interactive Cartographic Map Section */}
-      <InteractiveUgandaMap />
+      <div className="wrap pb-16">
+        <Reveal>
+          <InteractiveUgandaMap compact />
+        </Reveal>
+      </div>
     </div>
   );
 }

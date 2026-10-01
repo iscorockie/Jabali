@@ -20,11 +20,17 @@ import {
   Loader2,
   XCircle,
   Lock,
+  Download,
+  Users,
+  Hourglass,
 } from 'lucide-react';
+import { buildIcs, copyText, downloadFile, formatDateLong } from '@/lib/format';
+import { useSite } from '@/components/providers/SiteProvider';
 
 function BookingSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { pushToast, money } = useSite();
   const ref = searchParams.get('ref') || '';
   const sessionId = searchParams.get('session_id') || '';
   const paymentIntent = searchParams.get('payment_intent') || '';
@@ -50,6 +56,46 @@ function BookingSuccessContent() {
       })
       .finally(() => setLoading(false));
   }, [ref, sessionId, paymentIntent]);
+
+  const daysToDeparture = (() => {
+    const target = booking?.departureDate || searchParams.get('date');
+    if (!target) return null;
+    const ms = new Date(`${target}T00:00:00Z`).getTime() - Date.now();
+    return Math.ceil(ms / 86_400_000);
+  })();
+
+  const handleDownloadIcs = () => {
+    if (!booking) return;
+    const ics = buildIcs({
+      uid: booking.bookingReference,
+      title: `Jabali Trails — ${booking.expeditionTitle}`,
+      description: [
+        `Booking reference: ${booking.bookingReference}`,
+        `UWA permit docket: ${booking.uwaPermitDocketNumber || 'Pending issue'}`,
+        `Party: ${booking.guests} traveler(s) · ${booking.safariStyle === 'private' ? 'Private charter' : 'Small group (max 6)'}`,
+        `Due now: ${money(booking.pricing.payableNowUsd)} · Balance: ${money(booking.pricing.remainingBalanceUsd)}`,
+        'Trailhead briefing is at 07:30 with your UWA ranger — bring your passport and permit receipt.',
+      ].join('\n'),
+      startDate: booking.departureDate,
+      endDate: booking.endDate || booking.departureDate,
+      location: booking.expeditionTitle,
+    });
+    downloadFile(`${booking.bookingReference}-departure.ics`, ics, 'text/calendar');
+    pushToast({
+      tone: 'success',
+      title: 'Calendar invite downloaded',
+      message: 'Import it to keep your trek window and briefing time in sync.',
+    });
+  };
+
+  const handleCopyReference = async () => {
+    const ok = await copyText(booking?.bookingReference || ref);
+    pushToast({
+      tone: ok ? 'success' : 'error',
+      title: ok ? 'Booking reference copied' : 'Copy failed',
+      message: ok ? 'Use it at the trailhead desk or in the lookup tool.' : ref,
+    });
+  };
 
   const handleTriggerWebhookTest = async () => {
     setTestingWebhook(true);
@@ -192,14 +238,20 @@ function BookingSuccessContent() {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="no-print inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-label text-parchment self-start"
-            >
-              <Printer className="w-4 h-4 text-acacia" />
-              <span>Print Dossier</span>
-            </button>
+            <div className="no-print flex flex-wrap items-center gap-2 self-start">
+              <button type="button" onClick={handleCopyReference} className="btn btn-onPanel !py-2 text-xs">
+                <CheckCircle2 className="h-3.5 w-3.5 text-acacia" />
+                Copy reference
+              </button>
+              <button type="button" onClick={handleDownloadIcs} className="btn btn-onPanel !py-2 text-xs">
+                <Download className="h-3.5 w-3.5 text-acacia" />
+                Add to calendar
+              </button>
+              <button type="button" onClick={() => window.print()} className="btn btn-onPanel !py-2 text-xs">
+                <Printer className="h-3.5 w-3.5 text-acacia" />
+                Print dossier
+              </button>
+            </div>
           </div>
 
           {/* Key Reference Telemetry */}
@@ -257,21 +309,22 @@ function BookingSuccessContent() {
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
               <div className="p-3.5 rounded-xl bg-surface border border-line/10">
-                <span className="text-ink-muted block">Departure Date</span>
-                <strong className="font-label text-heading text-sm mt-0.5 block">
-                  {booking.departureDate}
+                <span className="text-ink-muted block">Departure date</span>
+                <strong className="font-display text-heading text-sm mt-0.5 block">
+                  {formatDateLong(booking.departureDate)}
                 </strong>
               </div>
               <div className="p-3.5 rounded-xl bg-surface border border-line/10">
-                <span className="text-ink-muted block">Return Date</span>
-                <strong className="font-label text-heading text-sm mt-0.5 block">
-                  {booking.endDate}
+                <span className="text-ink-muted block">Return date</span>
+                <strong className="font-display text-heading text-sm mt-0.5 block">
+                  {formatDateLong(booking.endDate)}
                 </strong>
               </div>
               <div className="p-3.5 rounded-xl bg-surface border border-line/10">
-                <span className="text-ink-muted block">Travelers</span>
-                <strong className="font-label text-heading text-sm mt-0.5 block">
-                  {booking.guests} Guest(s) ({booking.safariStyle})
+                <span className="text-ink-muted block">Party</span>
+                <strong className="font-display text-heading text-sm mt-0.5 block">
+                  {booking.guests} {booking.guests === 1 ? 'guest' : 'guests'} ·{' '}
+                  {booking.safariStyle === 'private' ? 'Private charter' : 'Small group'}
                 </strong>
               </div>
               <div className="p-3.5 rounded-xl bg-surface border border-line/10">
@@ -281,6 +334,73 @@ function BookingSuccessContent() {
                 </strong>
               </div>
             </div>
+
+            {daysToDeparture != null && daysToDeparture > 0 ? (
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-acacia/40 bg-acacia-light/70 px-4 py-3">
+                <p className="inline-flex items-center gap-2 text-sm text-heading">
+                  <Hourglass className="h-4 w-4 text-terracotta" />
+                  <span>
+                    <strong className="font-display">{daysToDeparture} days</strong> until your
+                    trailhead briefing at 07:30.
+                  </span>
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="chip chip-pos">Permit docket {displayDocket}</span>
+                  <a
+                    href={`mailto:expeditions@jabalitrails.africa?subject=${encodeURIComponent(
+                      `Pre-trek briefing · ${booking.bookingReference}`
+                    )}`}
+                    className="btn btn-sm btn-outline"
+                  >
+                    <Mail className="h-3.5 w-3.5" />
+                    Email the field desk
+                  </a>
+                </div>
+              </div>
+            ) : null}
+
+            {booking.leadGuest?.companions && booking.leadGuest.companions.length > 0 ? (
+              <div className="rounded-2xl border border-line/12 bg-surface p-4 sm:p-5">
+                <p className="flex items-center gap-1.5 font-label text-terracotta">
+                  <Users className="h-3.5 w-3.5" />
+                  Registered travelling party · UWA permit roster
+                </p>
+                <ul className="mt-3 space-y-2">
+                  <li className="flex flex-wrap items-baseline justify-between gap-2 rounded-xl bg-surface-raised px-3 py-2 text-xs">
+                    <span className="font-display font-semibold text-heading">
+                      {booking.leadGuest.fullName}{' '}
+                      <span className="font-label text-ink-subtle">lead traveler</span>
+                    </span>
+                    <span className="font-label text-ink-muted">
+                      {booking.leadGuest.passportNumber ? `Passport ${booking.leadGuest.passportNumber}` : 'Passport on file'}
+                      {booking.leadGuest.nationality ? ` · ${booking.leadGuest.nationality}` : ''}
+                    </span>
+                  </li>
+                  {booking.leadGuest.companions.map((c, i) => (
+                    <li
+                      key={`${c.fullName}-${i}`}
+                      className="flex flex-wrap items-baseline justify-between gap-2 rounded-xl bg-surface-raised px-3 py-2 text-xs"
+                    >
+                      <span className="font-display font-semibold text-heading">
+                        {c.fullName}{' '}
+                        <span className="font-label text-ink-subtle">guest {i + 2}</span>
+                      </span>
+                      <span className="font-label text-ink-muted">
+                        {c.passportNumber ? `Passport ${c.passportNumber}` : 'Passport pending'}
+                        {c.nationality ? ` · ${c.nationality}` : ''}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                {booking.leadGuest.companions.length + 1 < booking.guests ? (
+                  <p className="mt-2.5 text-[0.7rem] leading-relaxed text-ink-muted">
+                    {booking.guests - booking.leadGuest.companions.length - 1} traveler(s) still
+                    un-named. UWA requires a passport for every permit holder — send them to
+                    expeditions@jabalitrails.africa at least 21 days before departure.
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
 
             {/* Financial Summary */}
             <div className="p-5 rounded-2xl bg-surface border border-line/12 space-y-2.5 text-xs sm:text-sm">

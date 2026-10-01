@@ -54,6 +54,9 @@
   --bad: 153 27 27;
   --bad-soft: 253 232 232;
 
+  /* Sticky layout offsets (field header height) */
+  --header-h: 5.9rem;
+
   /* Elevation + effects */
   --shadow-1: 0 1px 2px rgba(17, 34, 24, 0.05), 0 8px 24px -12px rgba(17, 34, 24, 0.1);
   --shadow-2: 0 2px 4px rgba(17, 34, 24, 0.05), 0 18px 40px -18px rgba(17, 34, 24, 0.18);

@@ -206,7 +206,7 @@ function ExpeditionsCatalogue() {
       </section>
 
       {/* ── Sticky control rail ─────────────────────────────────────────────── */}
-      <section className="sticky top-[3.25rem] z-30 border-b border-line/12 bg-surface-raised/92 backdrop-blur-xl lg:top-[4.6rem]">
+      <section className="sticky top-[var(--header-h)] z-30 border-b border-line/12 bg-surface-raised/92 backdrop-blur-xl">
         <div className="wrap space-y-3 py-3.5">
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div className="flex items-center gap-2 overflow-x-auto pb-1 xl:pb-0">

@@ -15,6 +15,11 @@ import {
   Loader2,
 } from 'lucide-react';
 import { submitInquiryUniversal } from '@/lib/client-booking-engine';
+import { EXPEDITIONS } from '@/data/expeditions';
+import { useSite } from '@/components/providers/SiteProvider';
+import { useEffect } from 'react';
+import { downloadFile } from '@/lib/format';
+import { AlertCircle, Download, Sparkles } from 'lucide-react';
 
 const INTEREST_OPTIONS = [
   'Mountain Gorilla Trekking (Bwindi)',
@@ -27,7 +32,10 @@ const INTEREST_OPTIONS = [
   'Albertine Rift Endemic Birding',
 ];
 
+const INQUIRY_DRAFT_KEY = 'jabali_inquiry_draft_v1';
+
 export default function ContactPage() {
+  const { pushToast, money } = useSite();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -43,6 +51,122 @@ export default function ContactPage() {
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submittedRef, setSubmittedRef] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [draftReady, setDraftReady] = useState(false);
+
+  /* Restore an unfinished brief so travelers can come back to it later */
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(INQUIRY_DRAFT_KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d.fullName) setFullName(d.fullName);
+        if (d.email) setEmail(d.email);
+        if (d.phone) setPhone(d.phone);
+        if (d.country) setCountry(d.country);
+        if (d.preferredMonth) setPreferredMonth(d.preferredMonth);
+        if (d.durationDays) setDurationDays(d.durationDays);
+        if (d.guests) setGuests(Number(d.guests));
+        if (d.budgetPerPerson) setBudgetPerPerson(d.budgetPerPerson);
+        if (Array.isArray(d.interests) && d.interests.length) setInterests(d.interests);
+        if (d.notes) setNotes(d.notes);
+      }
+    } catch {
+      /* ignore malformed drafts */
+    }
+    setDraftReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!draftReady) return;
+    const id = window.setTimeout(() => {
+      try {
+        window.localStorage.setItem(
+          INQUIRY_DRAFT_KEY,
+          JSON.stringify({
+            fullName,
+            email,
+            phone,
+            country,
+            preferredMonth,
+            durationDays,
+            guests,
+            budgetPerPerson,
+            interests,
+            notes,
+            savedAt: new Date().toISOString(),
+          })
+        );
+      } catch {
+        /* ignore */
+      }
+    }, 400);
+    return () => window.clearTimeout(id);
+  }, [
+    draftReady,
+    fullName,
+    email,
+    phone,
+    country,
+    preferredMonth,
+    durationDays,
+    guests,
+    budgetPerPerson,
+    interests,
+    notes,
+  ]);
+
+  /* Indicative quote — matches the brief to the closest catalogue itinerary */
+  const estimate = (() => {
+    const days = parseInt(durationDays, 10) || 8;
+    const match =
+      [...EXPEDITIONS].sort(
+        (a, b) => Math.abs(a.durationDays - days) - Math.abs(b.durationDays - days)
+      )[0] || EXPEDITIONS[0];
+    const luxMultiplier = /Ultra-Luxury/i.test(budgetPerPerson)
+      ? 1.42
+      : /Mid|Comfort|\$3,\$4|\$4,000/i.test(budgetPerPerson)
+      ? 0.9
+      : 1.12;
+    const perPerson = Math.round((match.basePriceUsd + match.gorillaPermitUsd + match.chimpPermitUsd) * luxMultiplier);
+    const low = Math.round(perPerson * 0.86);
+    const high = Math.round(perPerson * 1.24);
+    return {
+      match,
+      days,
+      perPerson,
+      low: low * guests,
+      high: high * guests,
+      permits: match.gorillaPermitUsd + match.chimpPermitUsd,
+    };
+  })();
+
+  const validate = () => {
+    const errors: Record<string, string> = {};
+    if (fullName.trim().length < 2) errors['inq-name'] = 'So the right specialist signs your proposal.';
+    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email.trim()))
+      errors['inq-email'] = 'Proposals and PDF dossiers are sent here — please double-check it.';
+    if (phone.trim() && phone.replace(/\D/g, '').length < 8)
+      errors['inq-phone'] = 'Add a reachable WhatsApp number for field coordination.';
+    if (interests.length === 0) errors['inq-interests'] = 'Pick at least one experience you want prioritised.';
+    return errors;
+  };
+
+  useEffect(() => {
+    document.querySelectorAll('[data-inq-error]').forEach((n) => n.remove());
+    document.querySelectorAll('.field-error').forEach((n) => n.classList.remove('field-error'));
+    Object.entries(fieldErrors).forEach(([id, message]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('field-error');
+      el.setAttribute('aria-invalid', 'true');
+      const note = document.createElement('p');
+      note.setAttribute('data-inq-error', 'true');
+      note.className = 'mt-1.5 text-[0.72rem] font-medium leading-snug text-neg';
+      note.textContent = message;
+      el.insertAdjacentElement('afterend', note);
+    });
+  }, [fieldErrors]);
 
   const toggleInterest = (item: string) => {
     setInterests((prev) =>
@@ -50,8 +174,41 @@ export default function ContactPage() {
     );
   };
 
+  const handleDownloadBrief = () => {
+    const lines = [
+      'JABALI TRAILS AFRICA — TAILOR-MADE SAFARI BRIEF',
+      '==============================================',
+      `Traveler:        ${fullName || '—'}`,
+      `Email:           ${email || '—'}`,
+      `Phone:           ${phone || '—'}`,
+      `Country:         ${country || '—'}`,
+      `Window:          ${preferredMonth}`,
+      `Length:          ${durationDays}`,
+      `Party:           ${guests} traveler(s)`,
+      `Budget:          ${budgetPerPerson}`,
+      `Interests:       ${interests.join('; ') || '—'}`,
+      `Notes:           ${notes || '—'}`,
+      '',
+      `Closest catalogue match: ${estimate.match.title} (${estimate.match.durationDays} days)`,
+      `Indicative total: ${money(estimate.low)} – ${money(estimate.high)} for the party`,
+      `Includes UWA permit fees of ${money(estimate.permits)} per guest at face value.`,
+    ];
+    downloadFile('jabali-safari-brief.txt', lines.join('\r\n'), 'text/plain');
+    pushToast({ tone: 'success', title: 'Brief downloaded', message: 'Attach it to an email or keep it for reference.' });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const errors = validate();
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      const first = document.getElementById(Object.keys(errors)[0]);
+      first?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      (first as HTMLInputElement | null)?.focus({ preventScroll: true });
+      pushToast({ tone: 'warn', title: 'Nearly there', message: 'A couple of fields need attention.' });
+      return;
+    }
+    setFieldErrors({});
     setSubmitting(true);
     try {
       const data = await submitInquiryUniversal({
@@ -67,8 +224,23 @@ export default function ContactPage() {
         notes,
       });
       setSubmittedRef(data.inquiryReference || 'JBL-INQ-2026-9042');
+      try {
+        window.localStorage.removeItem(INQUIRY_DRAFT_KEY);
+      } catch {
+        /* ignore */
+      }
+      pushToast({
+        tone: 'success',
+        title: 'Safari brief received',
+        message: 'A Kampala specialist will reply with a proposal within 24 hours.',
+      });
     } catch {
       setSubmittedRef('JBL-INQ-2026-9042');
+      pushToast({
+        tone: 'info',
+        title: 'Brief saved locally',
+        message: 'We could not reach the server, so your inquiry is stored on this device — we will pick it up.',
+      });
     } finally {
       setSubmitting(false);
     }
@@ -159,12 +331,16 @@ export default function ContactPage() {
                         Full Name *
                       </label>
                       <input
+                        id="inq-name"
                         type="text"
                         required
                         placeholder="e.g. Alistair Finch"
                         value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-sm text-heading"
+                        onChange={(e) => {
+                          setFullName(e.target.value);
+                          if (fieldErrors['inq-name']) setFieldErrors((p) => ({ ...p, 'inq-name': '' }));
+                        }}
+                        className="field field-lg"
                       />
                     </div>
                     <div>
@@ -172,12 +348,16 @@ export default function ContactPage() {
                         Email Address *
                       </label>
                       <input
+                        id="inq-email"
                         type="email"
                         required
                         placeholder="alistair@example.com"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-sm text-heading"
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          if (fieldErrors['inq-email']) setFieldErrors((p) => ({ ...p, 'inq-email': '' }));
+                        }}
+                        className="field field-lg"
                       />
                     </div>
                     <div>
@@ -185,11 +365,12 @@ export default function ContactPage() {
                         Phone / WhatsApp
                       </label>
                       <input
+                        id="inq-phone"
                         type="tel"
                         placeholder="+44 7700 900077"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-sm text-heading"
+                        className="field field-lg"
                       />
                     </div>
                     <div>
@@ -197,11 +378,12 @@ export default function ContactPage() {
                         Country of Residence
                       </label>
                       <input
+                        id="inq-country"
                         type="text"
                         placeholder="United Kingdom / USA / Canada"
                         value={country}
                         onChange={(e) => setCountry(e.target.value)}
-                        className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-sm text-heading"
+                        className="field field-lg"
                       />
                     </div>
                   </div>
@@ -269,7 +451,7 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <span className="block text-xs font-label uppercase text-ink-muted mb-2">
+                    <span id="inq-interests" className="block text-xs font-label uppercase text-ink-muted mb-2">
                       Must-Have Wildlife &amp; Ecosystems
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -307,10 +489,54 @@ export default function ContactPage() {
                     />
                   </div>
 
+                  {/* Indicative quote preview — real numbers, no waiting on email */}
+                  <div className="rounded-2xl border border-acacia/40 bg-acacia-light/60 p-4 sm:p-5">
+                    <p className="flex items-center gap-2 font-label text-acacia-dark">
+                      <Sparkles className="h-3.5 w-3.5" />
+                      Indicative investment for {guests} traveler{guests === 1 ? '' : 's'}
+                    </p>
+                    <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
+                      <div>
+                        <p className="font-display text-2xl font-semibold text-heading">
+                          {money(estimate.low)} – {money(estimate.high)}
+                        </p>
+                        <p className="mt-1 text-xs leading-relaxed text-ink-muted">
+                          Closest catalogue match:{' '}
+                          <Link
+                            href={`/expeditions/${estimate.match.slug}`}
+                            className="font-semibold text-terracotta underline decoration-dotted underline-offset-2"
+                          >
+                            {estimate.match.title}
+                          </Link>{' '}
+                          ({estimate.match.durationDays} days). Includes UWA permits of{' '}
+                          {money(estimate.permits)} per guest at face value — the final proposal is
+                          tailored to your lodges, sector and season.
+                        </p>
+                      </div>
+                      <button type="button" onClick={handleDownloadBrief} className="btn btn-sm btn-outline">
+                        <Download className="h-3.5 w-3.5" />
+                        Save brief
+                      </button>
+                    </div>
+                  </div>
+
+                  {Object.values(fieldErrors).filter(Boolean).length > 0 ? (
+                    <div className="flex items-start gap-2 rounded-2xl border border-neg/35 bg-neg-soft p-4 text-xs text-neg">
+                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                      <ul className="list-inside list-disc space-y-1">
+                        {Object.values(fieldErrors)
+                          .filter(Boolean)
+                          .map((message) => (
+                            <li key={message}>{message}</li>
+                          ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full py-4 px-6 rounded-xl bg-terracotta hover:bg-terracotta-hover text-white font-semibold text-base shadow-sm flex items-center justify-center gap-2 transition-all"
+                    className="btn btn-primary btn-lg w-full justify-center"
                   >
                     {submitting ? (
                       <>

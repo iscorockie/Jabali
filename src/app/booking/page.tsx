@@ -1543,7 +1543,7 @@ function BookingEngineContent() {
             </div>
 
             {/* RIGHT 5 COLUMNS: STICKY ITEMIZED SAFARI DOSSIER & RECEIPT */}
-            <aside className="lg:col-span-5 lg:sticky lg:top-28 space-y-6">
+            <aside className="lg:col-span-5 lg:sticky lg:top-[calc(var(--header-h)+1rem)] space-y-6">
               <div className="bg-surface-raised rounded-2xl border-2 border-line/20 shadow-elevated overflow-hidden">
                 {/* Dossier Header */}
                 <div className="relative h-44 bg-canopy">

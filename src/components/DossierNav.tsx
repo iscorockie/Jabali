@@ -51,7 +51,7 @@ export default function DossierNav({ sections }: { sections: { id: string; label
   };
 
   return (
-    <div className="no-print sticky top-[3.25rem] z-30 border-y border-line/12 bg-surface-raised/92 backdrop-blur-xl lg:top-[4.6rem]">
+    <div className="no-print sticky top-[var(--header-h)] z-30 border-y border-line/12 bg-surface-raised/92 backdrop-blur-xl">
       <div className="wrap flex items-center gap-3 overflow-x-auto py-2.5">
         <span className="hidden shrink-0 font-label text-ink-subtle sm:block">Dossier</span>
         <div className="flex items-center gap-1">

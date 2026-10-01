@@ -327,7 +327,7 @@ export default function ExpeditionDetailPage({ params }: { params: { slug: strin
           </div>
 
           {/* Sticky booking rail */}
-          <aside id="book" className="space-y-5 scroll-mt-40 lg:col-span-4 lg:sticky lg:top-32">
+          <aside id="book" className="space-y-5 scroll-mt-40 lg:col-span-4 lg:sticky lg:top-[calc(var(--header-h)+1rem)]">
             <ExpeditionQuickBookSidebar expedition={expedition} />
 
             <div className="card space-y-3 p-5">
