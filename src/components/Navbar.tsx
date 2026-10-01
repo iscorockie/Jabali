@@ -12,7 +12,9 @@ import {
   ArrowUpRight,
   MapPin,
   Sparkles,
+  FileSearch,
 } from 'lucide-react';
+import PermitLookupModal from '@/components/PermitLookupModal';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
@@ -26,6 +28,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [lookupOpen, setLookupOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 no-print">
@@ -103,7 +106,15 @@ export default function Navbar() {
           </div>
 
           {/* Right Action CTA */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setLookupOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-canopy/20 hover:bg-parchment-dark text-canopy text-xs font-mono-tech font-semibold transition-all"
+            >
+              <FileSearch className="w-3.5 h-3.5 text-terracotta" />
+              <span>My Booking / Permit</span>
+            </button>
             <Link
               href="/booking"
               className="inline-flex items-center gap-2 bg-terracotta hover:bg-terracotta-hover text-white text-sm font-semibold px-5 py-2.5 rounded-lg shadow-sm transition-all"
@@ -173,10 +184,22 @@ export default function Navbar() {
                 <Sparkles className="w-4 h-4" />
                 <span>Launch Real-Time Booking &amp; Permit Checker</span>
               </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileOpen(false);
+                  setLookupOpen(true);
+                }}
+                className="w-full inline-flex items-center justify-center gap-2 border border-canopy/20 text-canopy font-semibold py-2.5 rounded-lg text-xs"
+              >
+                <FileSearch className="w-4 h-4 text-terracotta" />
+                <span>Lookup Existing Booking / UWA Permit Docket</span>
+              </button>
             </div>
           </div>
         )}
       </nav>
+      {lookupOpen && <PermitLookupModal onClose={() => setLookupOpen(false)} />}
     </header>
   );
 }

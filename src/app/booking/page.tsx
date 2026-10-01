@@ -96,6 +96,25 @@ function BookingEngineContent() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentGatewayMode>(
     initialMode as PaymentGatewayMode
   );
+  const [displayCurrency, setDisplayCurrency] = useState<'USD' | 'EUR' | 'GBP' | 'UGX'>('USD');
+
+  const currencyInfo = useMemo(() => {
+    switch (displayCurrency) {
+      case 'EUR':
+        return { symbol: '€', rate: 0.92, code: 'EUR' };
+      case 'GBP':
+        return { symbol: '£', rate: 0.78, code: 'GBP' };
+      case 'UGX':
+        return { symbol: 'USh ', rate: 3720, code: 'UGX' };
+      default:
+        return { symbol: '$', rate: 1, code: 'USD' };
+    }
+  }, [displayCurrency]);
+
+  const formatAmount = (usd: number) => {
+    const converted = Math.round(usd * currencyInfo.rate);
+    return `${currencyInfo.symbol}${converted.toLocaleString()}`;
+  };
 
   // Guest Manifest State
   const [fullName, setFullName] = useState('Dr. Clara Reynolds');
@@ -1232,10 +1251,32 @@ function BookingEngineContent() {
 
                   {/* Totals */}
                   <div className="space-y-2">
+                    <div className="flex items-center justify-between pb-2">
+                      <span className="text-[11px] font-mono-tech uppercase text-bark-muted">
+                        Display Currency:
+                      </span>
+                      <div className="inline-flex rounded-lg bg-parchment border border-canopy/15 p-0.5 text-[11px] font-mono-tech">
+                        {(['USD', 'EUR', 'GBP', 'UGX'] as const).map((cur) => (
+                          <button
+                            key={cur}
+                            type="button"
+                            onClick={() => setDisplayCurrency(cur)}
+                            className={`px-2 py-0.5 rounded-md font-semibold transition-all ${
+                              displayCurrency === cur
+                                ? 'bg-canopy text-acacia'
+                                : 'text-bark-muted hover:text-canopy'
+                            }`}
+                          >
+                            {cur}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     <div className="flex justify-between items-baseline text-sm">
                       <span className="text-bark-muted">Total Expedition &amp; Permit Value</span>
                       <span className="font-mono-tech text-lg font-bold text-canopy">
-                        ${pricing.totalTripCostUsd.toLocaleString()} USD
+                        {formatAmount(pricing.totalTripCostUsd)} {currencyInfo.code}
                       </span>
                     </div>
 
@@ -1249,18 +1290,23 @@ function BookingEngineContent() {
                             : 'Due Today (100% Full Payment)'}
                         </span>
                         <span className="font-mono-tech text-2xl font-bold text-white">
-                          $
                           {paymentMethod === 'inquiry-hold'
-                            ? '0'
-                            : pricing.payableNowUsd.toLocaleString()}{' '}
-                          USD
+                            ? '$0 USD'
+                            : `${formatAmount(pricing.payableNowUsd)} ${currencyInfo.code}`}
                         </span>
                       </div>
+                      {displayCurrency !== 'USD' && paymentMethod !== 'inquiry-hold' && (
+                        <div className="text-[10px] text-acacia font-mono-tech text-right">
+                          Settled via Stripe in USD (${pricing.payableNowUsd.toLocaleString()} USD)
+                        </div>
+                      )}
                       {paymentPlan === 'deposit-plus-permits' &&
                         paymentMethod !== 'inquiry-hold' && (
                           <div className="text-[11px] text-parchment/75 font-mono-tech flex justify-between pt-1">
                             <span>Remaining Balance (60 days pre-safari):</span>
-                            <span>${pricing.remainingBalanceUsd.toLocaleString()} USD</span>
+                            <span>
+                              {formatAmount(pricing.remainingBalanceUsd)} {currencyInfo.code}
+                            </span>
                           </div>
                         )}
                     </div>

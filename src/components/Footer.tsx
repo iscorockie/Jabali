@@ -234,6 +234,9 @@ export default function Footer() {
             </span>
           </div>
           <div className="flex items-center gap-6">
+            <Link href="/admin" className="text-acacia hover:text-parchment font-mono-tech transition-colors">
+              Admin &amp; Permit Console
+            </Link>
             <Link href="/booking" className="hover:text-parchment transition-colors">
               Booking Terms &amp; UWA Permit Policy
             </Link>

@@ -4,6 +4,7 @@ import { EXPEDITIONS, DESTINATIONS, TESTIMONIALS, LEAD_GUIDES } from '@/data/exp
 import { withBasePath } from '@/lib/base-path';
 import ExpeditionCard from '@/components/ExpeditionCard';
 import HeroQuickBookingBar from '@/components/HeroQuickBookingBar';
+import InteractiveUgandaMap from '@/components/InteractiveUgandaMap';
 import {
   Compass,
   ShieldCheck,
@@ -399,6 +400,11 @@ export default function HomePage() {
                 </div>
               </Link>
             ))}
+          </div>
+
+          {/* Interactive Uganda & East Africa Bush Flight Corridor Map */}
+          <div className="mt-14">
+            <InteractiveUgandaMap />
           </div>
         </div>
       </section>
