@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Jabali Trails Africa">
+  <defs>
+    <linearGradient id="jb" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1A3124"/>
+      <stop offset="1" stop-color="#112218"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#jb)"/>
+  <path d="M8 45 L23 22 L32 36 L40 25 L56 45 Z" fill="#C89B3C"/>
+  <path d="M23 22 L32 36 L26 45 L14 45 Z" fill="#B8532E" opacity="0.92"/>
+  <circle cx="45.5" cy="17" r="4.5" fill="#F6F3EC"/>
+</svg>

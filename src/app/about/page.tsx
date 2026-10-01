@@ -130,7 +130,7 @@ export default function AboutPage() {
   );
 
   return (
-    <div className="min-h-screen bg-parchment">
+    <div className="min-h-screen bg-surface">
       {/* Hero */}
       <section className="relative bg-canopy text-parchment py-16 sm:py-24 overflow-hidden">
         <div className="absolute inset-0 opacity-30">
@@ -144,11 +144,11 @@ export default function AboutPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-5">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-acacia/20 border border-acacia/40 text-acacia font-mono-tech text-xs">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-acacia/20 border border-acacia/40 text-acacia font-label text-xs">
               <Compass className="w-3.5 h-3.5" />
               FOUNDED IN BUHOMA &amp; KAMPALA · EAST AFRICAN OWNED
             </span>
-            <h1 className="font-serif text-4xl sm:text-6xl font-semibold tracking-tight leading-tight">
+            <h1 className="font-display text-4xl sm:text-6xl font-semibold tracking-tight leading-tight">
               Rooted in the Forest. Built by the Trackers Who Walk It.
             </h1>
             <p className="text-parchment/85 text-base sm:text-lg leading-relaxed">
@@ -159,45 +159,45 @@ export default function AboutPage() {
       </section>
 
       {/* Story & Values */}
-      <section className="py-16 sm:py-24 bg-parchment bg-topographic">
+      <section className="py-16 sm:py-24 bg-surface bg-topographic">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-6 space-y-5">
-              <span className="font-mono-tech text-xs uppercase tracking-widest text-terracotta font-semibold">
+              <span className="font-label text-xs uppercase tracking-widest text-terracotta font-semibold">
                 Our Origin Story
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl font-semibold text-canopy">
+              <h2 className="font-display text-3xl sm:text-4xl font-semibold text-heading">
                 From UWA Ranger Outposts to Bespoke Field Expeditions
               </h2>
-              <p className="text-bark-muted text-base leading-relaxed">
+              <p className="text-ink-muted text-base leading-relaxed">
                 For decades, travelers visiting Uganda booked through overseas brokers three layers removed from the actual trailheads of Bwindi, Kibale, and Kidepo. Too often, that meant mismatched gorilla permits requiring three-hour pre-dawn drives on muddy mountain roads, overcrowded vehicles, and little connection to the communities protecting the forest edge.
               </p>
-              <p className="text-bark-muted text-base leading-relaxed">
+              <p className="text-ink-muted text-base leading-relaxed">
                 In 2015, former Uganda Wildlife Authority tracker Moses Tumusiime and Makerere University conservation biologist Grace Namatovu launched Jabali Trails Africa. By combining direct UWA permit desk allocation in Kampala with a privately owned fleet of custom 4x4 Land Cruisers and deep relationships with eco-sanctuaries across the Albertine Rift, we eliminated every middleman.
               </p>
 
               <div className="grid grid-cols-3 gap-4 pt-4">
-                <div className="p-4 rounded-2xl bg-parchment-light border border-canopy/12">
-                  <div className="font-mono-tech text-2xl sm:text-3xl font-bold text-canopy">
+                <div className="p-4 rounded-2xl bg-surface-raised border border-line/12">
+                  <div className="font-label text-2xl sm:text-3xl font-bold text-heading">
                     11+
                   </div>
-                  <div className="text-xs text-bark-muted mt-1">
+                  <div className="text-xs text-ink-muted mt-1">
                     Seasons Operating Across Uganda
                   </div>
                 </div>
-                <div className="p-4 rounded-2xl bg-parchment-light border border-canopy/12">
-                  <div className="font-mono-tech text-2xl sm:text-3xl font-bold text-terracotta">
+                <div className="p-4 rounded-2xl bg-surface-raised border border-line/12">
+                  <div className="font-label text-2xl sm:text-3xl font-bold text-terracotta">
                     100%
                   </div>
-                  <div className="text-xs text-bark-muted mt-1">
+                  <div className="text-xs text-ink-muted mt-1">
                     Ugandan &amp; East African Guide Team
                   </div>
                 </div>
-                <div className="p-4 rounded-2xl bg-parchment-light border border-canopy/12">
-                  <div className="font-mono-tech text-2xl sm:text-3xl font-bold text-canopy">
+                <div className="p-4 rounded-2xl bg-surface-raised border border-line/12">
+                  <div className="font-label text-2xl sm:text-3xl font-bold text-heading">
                     $184K
                   </div>
-                  <div className="text-xs text-bark-muted mt-1">
+                  <div className="text-xs text-ink-muted mt-1">
                     Direct Community Grants Since 2021
                   </div>
                 </div>
@@ -235,17 +235,17 @@ export default function AboutPage() {
       </section>
 
       {/* Meet the Lead Guides with Interactive Specialty Filter & Direct Q&A */}
-      <section className="py-16 sm:py-24 bg-parchment-light border-y border-canopy/10">
+      <section className="py-16 sm:py-24 bg-surface-raised border-y border-line/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div className="max-w-2xl">
-              <span className="font-mono-tech text-xs uppercase tracking-widest text-terracotta font-semibold">
+              <span className="font-label text-xs uppercase tracking-widest text-terracotta font-semibold">
                 Field Leadership
               </span>
-              <h2 className="font-serif text-3xl sm:text-5xl font-semibold text-canopy mt-2">
+              <h2 className="font-display text-3xl sm:text-5xl font-semibold text-heading mt-2">
                 Meet Your Lead Field Naturalists
               </h2>
-              <p className="text-bark-muted text-base mt-3">
+              <p className="text-ink-muted text-base mt-3">
                 Filter our lead naturalist roster by field specialty or send a direct question to any guide via our Kampala radio &amp; operations desk.
               </p>
             </div>
@@ -264,7 +264,7 @@ export default function AboutPage() {
                   className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
                     guideSpecialtyFilter === tab.id
                       ? 'bg-canopy text-parchment'
-                      : 'bg-parchment text-bark hover:bg-parchment-dark'
+                      : 'bg-surface text-ink hover:bg-surface-sunk'
                   }`}
                 >
                   {tab.label}
@@ -279,7 +279,7 @@ export default function AboutPage() {
               return (
                 <div
                   key={guide.name}
-                  className="bg-parchment rounded-2xl border border-canopy/15 overflow-hidden shadow-card flex flex-col"
+                  className="bg-surface rounded-2xl border border-line/15 overflow-hidden shadow-card flex flex-col"
                 >
                   <div className="h-64 relative bg-canopy">
                     <img
@@ -287,32 +287,32 @@ export default function AboutPage() {
                       alt={guide.role}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute bottom-3 left-3 right-3 px-3 py-1.5 rounded-lg bg-canopy/85 backdrop-blur-md text-xs font-mono-tech text-acacia flex items-center justify-between">
+                    <div className="absolute bottom-3 left-3 right-3 px-3 py-1.5 rounded-lg bg-canopy/85 backdrop-blur-md text-xs font-label text-acacia flex items-center justify-between">
                       <span>{guide.homeRegion}</span>
                       <span>{guide.experienceYears} Yrs</span>
                     </div>
                   </div>
                   <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                     <div className="space-y-3">
-                      <h3 className="font-serif text-2xl font-semibold text-canopy capitalize">
+                      <h3 className="font-display text-2xl font-semibold text-heading capitalize">
                         {displayName}
                       </h3>
-                      <div className="text-xs font-mono-tech text-terracotta font-semibold">
+                      <div className="text-xs font-label text-terracotta font-semibold">
                         {guide.role}
                       </div>
-                      <p className="text-sm text-bark-muted leading-relaxed">
+                      <p className="text-sm text-ink-muted leading-relaxed">
                         {guide.bio}
                       </p>
 
                       <div className="pt-2">
-                        <div className="text-[11px] font-mono-tech uppercase text-bark-subtle mb-1.5">
+                        <div className="text-[11px] font-label uppercase text-ink-subtle mb-1.5">
                           Specialties
                         </div>
                         <div className="flex flex-wrap gap-1.5">
                           {guide.specialties.map((s, idx) => (
                             <span
                               key={idx}
-                              className="px-2.5 py-0.5 rounded-md bg-parchment-dark text-canopy text-xs font-mono-tech"
+                              className="px-2.5 py-0.5 rounded-md bg-surface-sunk text-heading text-xs font-label"
                             >
                               {s}
                             </span>
@@ -320,16 +320,16 @@ export default function AboutPage() {
                         </div>
                       </div>
 
-                      <div className="text-xs text-bark-muted font-mono-tech pt-1">
+                      <div className="text-xs text-ink-muted font-label pt-1">
                         Languages:{' '}
-                        <strong className="text-canopy">
+                        <strong className="text-heading">
                           {guide.languages.join(', ')}
                         </strong>
                       </div>
                     </div>
 
                     <div className="space-y-3 pt-2">
-                      <blockquote className="p-3.5 rounded-xl bg-parchment-light border-l-2 border-terracotta text-xs italic text-bark">
+                      <blockquote className="p-3.5 rounded-xl bg-surface-raised border-l-2 border-terracotta text-xs italic text-ink">
                         &ldquo;{guide.quote}&rdquo;
                       </blockquote>
 
@@ -363,11 +363,11 @@ export default function AboutPage() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="max-w-3xl space-y-3">
-            <span className="font-mono-tech text-xs uppercase tracking-widest text-acacia flex items-center gap-2">
+            <span className="font-label text-xs uppercase tracking-widest text-acacia flex items-center gap-2">
               <Calculator className="w-4 h-4" />
               <span>Interactive 2026 Conservation &amp; Community Ledger</span>
             </span>
-            <h2 className="font-serif text-3xl sm:text-5xl font-semibold">
+            <h2 className="font-display text-3xl sm:text-5xl font-semibold">
               Calculate Your Exact Conservation Impact
             </h2>
             <p className="text-parchment/80 text-base leading-relaxed">
@@ -379,7 +379,7 @@ export default function AboutPage() {
             {/* Controls */}
             <div className="lg:col-span-5 space-y-5">
               <div>
-                <label className="block text-xs font-mono-tech uppercase text-acacia mb-1.5">
+                <label className="block text-xs font-label uppercase text-acacia mb-1.5">
                   1. Select Expedition Itinerary
                 </label>
                 <select
@@ -396,7 +396,7 @@ export default function AboutPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-mono-tech uppercase text-acacia mb-1.5">
+                <label className="block text-xs font-label uppercase text-acacia mb-1.5">
                   2. Number of Travelers: <strong>{calcGuests} Guests</strong>
                 </label>
                 <input
@@ -407,7 +407,7 @@ export default function AboutPage() {
                   onChange={(e) => setCalcGuests(Number(e.target.value))}
                   className="w-full accent-terracotta cursor-pointer"
                 />
-                <div className="flex justify-between text-[11px] font-mono-tech text-parchment/60 mt-1">
+                <div className="flex justify-between text-[11px] font-label text-parchment/60 mt-1">
                   <span>1 Solo</span>
                   <span>2 Couple</span>
                   <span>4 Family</span>
@@ -422,7 +422,7 @@ export default function AboutPage() {
                 <button
                   type="button"
                   onClick={() => setCalcLuxury(!calcLuxury)}
-                  className={`px-3 py-1 rounded-lg font-mono-tech text-xs font-semibold transition-all ${
+                  className={`px-3 py-1 rounded-lg font-label text-xs font-semibold transition-all ${
                     calcLuxury
                       ? 'bg-acacia text-canopy'
                       : 'bg-white/10 text-parchment/75'
@@ -436,10 +436,10 @@ export default function AboutPage() {
             {/* Live Breakdown */}
             <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-5 rounded-2xl bg-canopy/90 border border-acacia/30 space-y-1">
-                <span className="text-[11px] font-mono-tech uppercase text-acacia">
+                <span className="text-[11px] font-label uppercase text-acacia">
                   Jabali 5% Community Mandate
                 </span>
-                <div className="font-mono-tech text-3xl font-bold text-white">
+                <div className="font-label text-3xl font-bold text-white">
                   ${impactMetrics.fivePercentFund.toLocaleString()} USD
                 </div>
                 <p className="text-xs text-parchment/75">
@@ -448,10 +448,10 @@ export default function AboutPage() {
               </div>
 
               <div className="p-5 rounded-2xl bg-canopy/90 border border-white/15 space-y-1">
-                <span className="text-[11px] font-mono-tech uppercase text-emerald-400">
+                <span className="text-[11px] font-label uppercase text-emerald-400">
                   UWA 20% Statutory Revenue Share
                 </span>
-                <div className="font-mono-tech text-3xl font-bold text-white">
+                <div className="font-label text-3xl font-bold text-white">
                   ${impactMetrics.uwaCommunityShare.toLocaleString()} USD
                 </div>
                 <p className="text-xs text-parchment/75">
@@ -460,10 +460,10 @@ export default function AboutPage() {
               </div>
 
               <div className="p-5 rounded-2xl bg-canopy/90 border border-white/15 space-y-1">
-                <span className="text-[11px] font-mono-tech uppercase text-acacia">
+                <span className="text-[11px] font-label uppercase text-acacia">
                   Gorilla Doctors + Anti-Snare Patrols
                 </span>
-                <div className="font-mono-tech text-2xl font-bold text-white">
+                <div className="font-label text-2xl font-bold text-white">
                   ${impactMetrics.gorillaDoctorsGrant} USD + {impactMetrics.rangerPatrolDays} Patrol Days
                 </div>
                 <p className="text-xs text-parchment/75">
@@ -473,10 +473,10 @@ export default function AboutPage() {
 
               <div className="p-5 rounded-2xl bg-terracotta/95 text-white space-y-2 flex flex-col justify-between">
                 <div>
-                  <span className="text-[11px] font-mono-tech uppercase text-white/85">
+                  <span className="text-[11px] font-label uppercase text-white/85">
                     Total Verified Conservation Impact
                   </span>
-                  <div className="font-mono-tech text-3xl font-bold">
+                  <div className="font-label text-3xl font-bold">
                     ${impactMetrics.totalConservationImpact.toLocaleString()} USD
                   </div>
                 </div>
@@ -484,7 +484,7 @@ export default function AboutPage() {
                   href={`/booking?expedition=${encodeURIComponent(
                     selectedCalcExp.id
                   )}&guests=${calcGuests}`}
-                  className="inline-flex items-center justify-between px-3.5 py-2 rounded-xl bg-canopy text-acacia font-mono-tech text-xs font-semibold"
+                  className="inline-flex items-center justify-between px-3.5 py-2 rounded-xl bg-canopy text-acacia font-label text-xs font-semibold"
                 >
                   <span>Book &amp; Lock This Grant</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -498,7 +498,7 @@ export default function AboutPage() {
               <div className="w-10 h-10 rounded-xl bg-acacia/20 text-acacia flex items-center justify-center">
                 <ShieldCheck className="w-5 h-5" />
               </div>
-              <h3 className="font-serif text-xl font-semibold text-white">
+              <h3 className="font-display text-xl font-semibold text-white">
                 1. Gorilla Doctors &amp; Veterinary Care
               </h3>
               <p className="text-sm text-parchment/75 leading-relaxed">
@@ -510,7 +510,7 @@ export default function AboutPage() {
               <div className="w-10 h-10 rounded-xl bg-acacia/20 text-acacia flex items-center justify-center">
                 <HeartHandshake className="w-5 h-5" />
               </div>
-              <h3 className="font-serif text-xl font-semibold text-white">
+              <h3 className="font-display text-xl font-semibold text-white">
                 2. Ride 4 a Woman &amp; Batwa Livelihoods
               </h3>
               <p className="text-sm text-parchment/75 leading-relaxed">
@@ -522,7 +522,7 @@ export default function AboutPage() {
               <div className="w-10 h-10 rounded-xl bg-acacia/20 text-acacia flex items-center justify-center">
                 <Award className="w-5 h-5" />
               </div>
-              <h3 className="font-serif text-xl font-semibold text-white">
+              <h3 className="font-display text-xl font-semibold text-white">
                 3. Kibale Snare Removal Patrols
               </h3>
               <p className="text-sm text-parchment/75 leading-relaxed">
@@ -534,21 +534,21 @@ export default function AboutPage() {
       </section>
 
       {/* Interactive Bwindi & Equatorial Trekking Gear Readiness Checklist */}
-      <section className="py-16 sm:py-24 bg-parchment bg-topographic">
+      <section className="py-16 sm:py-24 bg-surface bg-topographic">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <span className="font-mono-tech text-xs uppercase tracking-widest text-terracotta font-semibold">
+              <span className="font-label text-xs uppercase tracking-widest text-terracotta font-semibold">
                 Interactive Field Preparation
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl font-semibold text-canopy mt-1">
+              <h2 className="font-display text-3xl sm:text-4xl font-semibold text-heading mt-1">
                 Bwindi &amp; Albertine Rift Gear Readiness Checklist
               </h2>
-              <p className="text-sm text-bark-muted mt-1">
+              <p className="text-sm text-ink-muted mt-1">
                 Check off your essential equatorial rainforest gear before landing at Entebbe International Airport (EBB).
               </p>
             </div>
-            <div className="px-4 py-2.5 rounded-2xl bg-canopy text-parchment font-mono-tech text-xs shrink-0">
+            <div className="px-4 py-2.5 rounded-2xl bg-canopy text-parchment font-label text-xs shrink-0">
               Field Readiness: <strong className="text-acacia">{readinessPercent}%</strong> ({checkedGear.length}/{PACKING_ITEMS.length} Packed)
             </div>
           </div>
@@ -563,17 +563,17 @@ export default function AboutPage() {
                   onClick={() => toggleGear(item.id)}
                   className={`p-4 rounded-2xl border text-left flex items-start gap-3.5 transition-all ${
                     isChecked
-                      ? 'bg-emerald-50/90 border-emerald-600/40 text-canopy'
-                      : 'bg-parchment-light border-canopy/15 text-bark hover:border-canopy/40'
+                      ? 'bg-pos-soft/90 border-pos/30 text-heading'
+                      : 'bg-surface-raised border-line/15 text-ink hover:border-line/40'
                   }`}
                 >
                   {isChecked ? (
-                    <CheckSquare className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
+                    <CheckSquare className="w-5 h-5 text-pos shrink-0 mt-0.5" />
                   ) : (
-                    <Square className="w-5 h-5 text-bark-muted shrink-0 mt-0.5" />
+                    <Square className="w-5 h-5 text-ink-muted shrink-0 mt-0.5" />
                   )}
                   <div>
-                    <span className="text-[10px] font-mono-tech uppercase text-terracotta block">
+                    <span className="text-[10px] font-label uppercase text-terracotta block">
                       {item.category}
                     </span>
                     <span className="text-xs sm:text-sm font-medium leading-snug">
@@ -590,13 +590,13 @@ export default function AboutPage() {
       {/* Direct Guide Question Modal */}
       {activeGuideForModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-parchment-light rounded-3xl border border-canopy/20 max-w-lg w-full shadow-elevated overflow-hidden">
+          <div className="bg-surface-raised rounded-3xl border border-line/20 max-w-lg w-full shadow-elevated overflow-hidden">
             <div className="bg-canopy text-parchment px-6 py-5 flex items-center justify-between">
               <div>
-                <span className="font-mono-tech text-xs text-acacia uppercase">
+                <span className="font-label text-xs text-acacia uppercase">
                   Kampala &amp; Bwindi Radio Dispatch
                 </span>
-                <h3 className="font-serif text-2xl font-semibold capitalize">
+                <h3 className="font-display text-2xl font-semibold capitalize">
                   Ask {activeGuideForModal} a Question
                 </h3>
               </div>
@@ -612,11 +612,11 @@ export default function AboutPage() {
             <div className="p-6">
               {qaConfirmation ? (
                 <div className="space-y-4 text-center py-4">
-                  <CheckCircle2 className="w-12 h-12 text-emerald-700 mx-auto" />
-                  <h4 className="font-serif text-2xl text-canopy">
+                  <CheckCircle2 className="w-12 h-12 text-pos mx-auto" />
+                  <h4 className="font-display text-2xl text-heading">
                     Field Message Logged ({qaConfirmation})
                   </h4>
-                  <p className="text-xs text-bark-muted leading-relaxed">
+                  <p className="text-xs text-ink-muted leading-relaxed">
                     Your question for <strong className="capitalize">{activeGuideForModal}</strong> has been logged in our Kampala server ledger (<code>/api/inquiries</code>). Expect a personal response within 24 hours.
                   </p>
                   <button
@@ -630,7 +630,7 @@ export default function AboutPage() {
               ) : (
                 <form onSubmit={handleSendGuideQuestion} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                    <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                       Your Name *
                     </label>
                     <input
@@ -639,11 +639,11 @@ export default function AboutPage() {
                       value={qaName}
                       onChange={(e) => setQaName(e.target.value)}
                       placeholder="Dr. Elena Vance"
-                      className="w-full rounded-xl bg-white border border-canopy/20 px-3.5 py-2.5 text-xs text-canopy"
+                      className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-xs text-heading"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                    <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                       Email Address *
                     </label>
                     <input
@@ -652,11 +652,11 @@ export default function AboutPage() {
                       value={qaEmail}
                       onChange={(e) => setQaEmail(e.target.value)}
                       placeholder="elena@example.com"
-                      className="w-full rounded-xl bg-white border border-canopy/20 px-3.5 py-2.5 text-xs text-canopy"
+                      className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-xs text-heading"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                    <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                       Question for <span className="capitalize">{activeGuideForModal}</span> *
                     </label>
                     <textarea
@@ -665,7 +665,7 @@ export default function AboutPage() {
                       value={qaQuestion}
                       onChange={(e) => setQaQuestion(e.target.value)}
                       placeholder="Ask about Bwindi trail steepness, gorilla photography lenses, or birding checklists..."
-                      className="w-full rounded-xl bg-white border border-canopy/20 p-3.5 text-xs text-canopy"
+                      className="w-full rounded-xl bg-field border border-line/20 p-3.5 text-xs text-heading"
                     />
                   </div>
                   <button

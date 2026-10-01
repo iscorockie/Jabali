@@ -115,27 +115,27 @@ export default function ExpeditionQuickBookSidebar({
   const totalPermitUsd = expedition.gorillaPermitUsd + expedition.chimpPermitUsd;
 
   return (
-    <div className="bg-parchment-light rounded-2xl border-2 border-canopy/20 shadow-elevated overflow-hidden">
+    <div className="bg-surface-raised rounded-2xl border-2 border-line/20 shadow-elevated overflow-hidden">
       <div className="bg-canopy text-parchment p-6 space-y-2">
-        <div className="flex items-center justify-between text-xs font-mono-tech text-acacia">
+        <div className="flex items-center justify-between text-xs font-label text-acacia">
           <span>LIVE PERMIT &amp; STRIPE ENGINE</span>
           <span>{expedition.durationDays} DAYS</span>
         </div>
         <div className="flex items-baseline gap-2">
-          <span className="font-mono-tech text-3xl sm:text-4xl font-bold text-white">
+          <span className="font-label text-3xl sm:text-4xl font-bold text-white">
             ${pricing.effectiveBasePerPersonUsd.toLocaleString()}
           </span>
           <span className="text-xs text-parchment/75">/ guest ({pricing.seasonName})</span>
         </div>
         {pricing.isGreenSeason ? (
-          <div className="text-xs text-emerald-300 font-mono-tech flex items-center gap-1">
+          <div className="text-xs text-emerald-300 font-label flex items-center gap-1">
             <Sparkles className="w-3.5 h-3.5" />
             <span>
               Emerald Green Season Discount Applied (-${expedition.greenSeasonDiscountUsd}/pp)
             </span>
           </div>
         ) : (
-          <div className="text-xs text-emerald-300 font-mono-tech">
+          <div className="text-xs text-emerald-300 font-label">
             Emerald Season (Apr–May, Nov): $
             {(expedition.basePriceUsd - expedition.greenSeasonDiscountUsd).toLocaleString()}/pp
           </div>
@@ -148,7 +148,7 @@ export default function ExpeditionQuickBookSidebar({
           <div>
             <label
               htmlFor="sidebar-date"
-              className="block text-[11px] font-mono-tech uppercase text-bark-muted mb-1"
+              className="block text-[11px] font-label uppercase text-ink-muted mb-1"
             >
               Target Departure Date
             </label>
@@ -159,13 +159,13 @@ export default function ExpeditionQuickBookSidebar({
               max="2027-12-31"
               value={departureDate}
               onChange={(e) => setDepartureDate(e.target.value)}
-              className="w-full rounded-xl bg-white border border-canopy/20 px-3.5 py-2.5 text-xs font-mono-tech font-semibold text-canopy"
+              className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-xs font-label font-semibold text-heading"
             />
             {selectedDayInfo && (
-              <div className="mt-1.5 flex items-center justify-between text-[11px] font-mono-tech">
-                <span className="text-bark-muted">UWA Sector Status:</span>
+              <div className="mt-1.5 flex items-center justify-between text-[11px] font-label">
+                <span className="text-ink-muted">UWA Sector Status:</span>
                 {selectedDayInfo.permitsRemaining > 0 ? (
-                  <span className="text-emerald-800 font-semibold">
+                  <span className="text-pos font-semibold">
                     ✓ {selectedDayInfo.permitsRemaining} permits available
                   </span>
                 ) : (
@@ -181,7 +181,7 @@ export default function ExpeditionQuickBookSidebar({
             <div>
               <label
                 htmlFor="sidebar-guests"
-                className="block text-[11px] font-mono-tech uppercase text-bark-muted mb-1"
+                className="block text-[11px] font-label uppercase text-ink-muted mb-1"
               >
                 Travelers
               </label>
@@ -189,7 +189,7 @@ export default function ExpeditionQuickBookSidebar({
                 id="sidebar-guests"
                 value={guests}
                 onChange={(e) => setGuests(Number(e.target.value))}
-                className="w-full rounded-xl bg-white border border-canopy/20 px-3 py-2.5 text-xs font-semibold text-canopy"
+                className="w-full rounded-xl bg-field border border-line/20 px-3 py-2.5 text-xs font-semibold text-heading"
               >
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
                   <option key={n} value={n}>
@@ -202,7 +202,7 @@ export default function ExpeditionQuickBookSidebar({
             <div>
               <label
                 htmlFor="sidebar-style"
-                className="block text-[11px] font-mono-tech uppercase text-bark-muted mb-1"
+                className="block text-[11px] font-label uppercase text-ink-muted mb-1"
               >
                 Safari Style
               </label>
@@ -210,7 +210,7 @@ export default function ExpeditionQuickBookSidebar({
                 id="sidebar-style"
                 value={safariStyle}
                 onChange={(e) => setSafariStyle(e.target.value as SafariStyle)}
-                className="w-full rounded-xl bg-white border border-canopy/20 px-3 py-2.5 text-xs font-semibold text-canopy"
+                className="w-full rounded-xl bg-field border border-line/20 px-3 py-2.5 text-xs font-semibold text-heading"
               >
                 <option value="shared">Small Group (Max 6)</option>
                 <option value="private">
@@ -223,7 +223,7 @@ export default function ExpeditionQuickBookSidebar({
 
         {/* Permit Callout */}
         <div className="p-3.5 rounded-xl bg-acacia-light border border-acacia/40 space-y-1">
-          <div className="flex items-center justify-between text-xs font-mono-tech font-semibold text-canopy">
+          <div className="flex items-center justify-between text-xs font-label font-semibold text-heading">
             <span className="flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-terracotta" />
               UWA Permits ({guests}x)
@@ -234,22 +234,22 @@ export default function ExpeditionQuickBookSidebar({
                 : 'Included'}
             </span>
           </div>
-          <p className="text-[11px] text-bark-muted leading-relaxed">
+          <p className="text-[11px] text-ink-muted leading-relaxed">
             {expedition.permitSummary}
           </p>
         </div>
 
         {/* Live Calculated Totals */}
-        <div className="space-y-1.5 text-xs border-y border-canopy/10 py-3">
+        <div className="space-y-1.5 text-xs border-y border-line/10 py-3">
           <div className="flex justify-between">
-            <span className="text-bark-muted">Total Trip &amp; Permit Value:</span>
-            <span className="font-mono-tech font-bold text-canopy">
+            <span className="text-ink-muted">Total Trip &amp; Permit Value:</span>
+            <span className="font-label font-bold text-heading">
               ${pricing.totalTripCostUsd.toLocaleString()} USD
             </span>
           </div>
           <div className="flex justify-between text-terracotta font-semibold">
             <span>Due Today (30% Deposit + Permits):</span>
-            <span className="font-mono-tech">
+            <span className="font-label">
               ${pricing.payableNowUsd.toLocaleString()} USD
             </span>
           </div>
@@ -291,15 +291,15 @@ export default function ExpeditionQuickBookSidebar({
             href={`/booking?expedition=${encodeURIComponent(
               expedition.id
             )}&date=${encodeURIComponent(departureDate)}&guests=${guests}&mode=inquiry`}
-            className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-canopy/20 hover:bg-parchment-dark text-canopy font-semibold text-xs transition-all"
+            className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-line/20 hover:bg-surface-sunk text-heading font-semibold text-xs transition-all"
           >
             <Compass className="w-3.5 h-3.5 text-terracotta" />
             <span>Place 48-Hour Complimentary Permit Hold</span>
           </Link>
         </div>
 
-        <div className="pt-1 flex items-center justify-center gap-2 text-[11px] text-bark-muted font-mono-tech">
-          <CreditCard className="w-3.5 h-3.5 text-canopy" />
+        <div className="pt-1 flex items-center justify-center gap-2 text-[11px] text-ink-muted font-label">
+          <CreditCard className="w-3.5 h-3.5 text-heading" />
           <span>Stripe Checkout &amp; Embedded Payment Element</span>
         </div>
       </div>

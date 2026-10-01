@@ -147,16 +147,16 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-parchment bg-topographic py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-surface bg-topographic py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-10">
         {/* Header */}
         <div className="bg-canopy text-parchment rounded-3xl p-8 sm:p-10 shadow-elevated flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-acacia/20 border border-acacia/40 text-acacia font-mono-tech text-xs">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-acacia/20 border border-acacia/40 text-acacia font-label text-xs">
               <Compass className="w-3.5 h-3.5" />
               KAMPALA &amp; BWINDI OPERATIONS CONSOLE
             </span>
-            <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-white">
+            <h1 className="font-display text-3xl sm:text-4xl font-semibold text-white">
               Field Inventory, Stripe Webhooks &amp; Booking Ledger
             </h1>
             <p className="text-sm text-parchment/80 max-w-2xl">
@@ -167,7 +167,7 @@ export default function AdminDashboardPage() {
             <button
               type="button"
               onClick={loadData}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-mono-tech text-parchment"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-label text-parchment"
             >
               <RefreshCw className="w-4 h-4 text-acacia" />
               <span>Sync Server Ledger</span>
@@ -183,9 +183,9 @@ export default function AdminDashboardPage() {
         </div>
 
         {statusMessage && (
-          <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-300 text-xs font-mono-tech text-emerald-900 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-pos-soft border border-pos/30 text-xs font-label text-pos flex items-center justify-between">
             <span className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-700" />
+              <CheckCircle2 className="w-4 h-4 text-pos" />
               {statusMessage}
             </span>
             <button
@@ -199,13 +199,13 @@ export default function AdminDashboardPage() {
         )}
 
         {/* 1. Live Bookings Table */}
-        <div className="bg-parchment-light rounded-3xl border border-canopy/15 p-6 sm:p-8 shadow-card space-y-5">
+        <div className="bg-surface-raised rounded-3xl border border-line/15 p-6 sm:p-8 shadow-card space-y-5">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-serif text-2xl font-semibold text-canopy">
+              <h2 className="font-display text-2xl font-semibold text-heading">
                 Active Safari Bookings &amp; UWA Permit Dockets ({bookings.length})
               </h2>
-              <p className="text-xs text-bark-muted">
+              <p className="text-xs text-ink-muted">
                 Backed by <code>/api/bookings</code> &amp; <code>/api/webhooks/stripe</code>
               </p>
             </div>
@@ -214,7 +214,7 @@ export default function AdminDashboardPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-canopy/15 font-mono-tech uppercase text-bark-muted">
+                <tr className="border-b border-line/15 font-label uppercase text-ink-muted">
                   <th className="py-3 px-3">Booking Ref</th>
                   <th className="py-3 px-3">Expedition</th>
                   <th className="py-3 px-3">Departure</th>
@@ -224,30 +224,30 @@ export default function AdminDashboardPage() {
                   <th className="py-3 px-3 text-right">Operations Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-canopy/10">
+              <tbody className="divide-y divide-line/10">
                 {bookings.map((b) => (
-                  <tr key={b.id} className="hover:bg-parchment/60">
-                    <td className="py-3.5 px-3 font-mono-tech font-bold text-canopy">
+                  <tr key={b.id} className="hover:bg-surface/60">
+                    <td className="py-3.5 px-3 font-label font-bold text-heading">
                       {b.bookingReference}
                     </td>
-                    <td className="py-3.5 px-3 font-medium text-canopy">
+                    <td className="py-3.5 px-3 font-medium text-heading">
                       {b.expeditionTitle}
                     </td>
-                    <td className="py-3.5 px-3 font-mono-tech">
+                    <td className="py-3.5 px-3 font-label">
                       {b.departureDate} ({b.guests} pax)
                     </td>
                     <td className="py-3.5 px-3">
-                      <div className="font-medium text-canopy">{b.leadGuest.fullName}</div>
-                      <div className="text-[11px] text-bark-muted">{b.leadGuest.email}</div>
+                      <div className="font-medium text-heading">{b.leadGuest.fullName}</div>
+                      <div className="text-[11px] text-ink-muted">{b.leadGuest.email}</div>
                     </td>
-                    <td className="py-3.5 px-3 font-mono-tech font-semibold text-canopy">
+                    <td className="py-3.5 px-3 font-label font-semibold text-heading">
                       ${b.pricing.payableNowUsd.toLocaleString()} USD
                     </td>
                     <td className="py-3.5 px-3">
                       <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-mono-tech text-[10px] font-bold ${
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-label text-[10px] font-bold ${
                           b.status === 'paid'
-                            ? 'bg-emerald-100 text-emerald-900'
+                            ? 'bg-pos-soft text-pos'
                             : b.status === 'inquiry_hold'
                             ? 'bg-amber-100 text-amber-900'
                             : b.status === 'cancelled'
@@ -258,7 +258,7 @@ export default function AdminDashboardPage() {
                         {b.status.toUpperCase()}
                       </span>
                       {b.uwaPermitDocketNumber && (
-                        <div className="font-mono-tech text-[10px] text-bark-muted mt-1">
+                        <div className="font-label text-[10px] text-ink-muted mt-1">
                           {b.uwaPermitDocketNumber}
                         </div>
                       )}
@@ -268,7 +268,7 @@ export default function AdminDashboardPage() {
                         <button
                           type="button"
                           onClick={() => handleMarkPaidViaWebhook(b.bookingReference)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-canopy text-acacia font-mono-tech text-[11px]"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-canopy text-acacia font-label text-[11px]"
                         >
                           <Webhook className="w-3 h-3" />
                           <span>Webhook Paid</span>
@@ -278,7 +278,7 @@ export default function AdminDashboardPage() {
                         <button
                           type="button"
                           onClick={() => handleCancelBooking(b.bookingReference)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-red-300 text-red-700 font-mono-tech text-[11px]"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-red-300 text-red-700 font-label text-[11px]"
                         >
                           <span>Release Permits</span>
                         </button>
@@ -305,27 +305,27 @@ export default function AdminDashboardPage() {
           {/* UWA Permit Quota Override Form */}
           <form
             onSubmit={handleOverrideQuota}
-            className="lg:col-span-5 bg-parchment-light rounded-3xl border border-canopy/15 p-6 sm:p-8 shadow-card space-y-4"
+            className="lg:col-span-5 bg-surface-raised rounded-3xl border border-line/15 p-6 sm:p-8 shadow-card space-y-4"
           >
-            <div className="flex items-center gap-2 text-xs font-mono-tech uppercase text-terracotta font-semibold">
+            <div className="flex items-center gap-2 text-xs font-label uppercase text-terracotta font-semibold">
               <Sliders className="w-4 h-4" />
               <span>Live UWA Sector Quota Control (`POST /api/availability`)</span>
             </div>
-            <h3 className="font-serif text-xl font-semibold text-canopy">
+            <h3 className="font-display text-xl font-semibold text-heading">
               Adjust Daily Gorilla / Chimp Permit Allocation
             </h3>
-            <p className="text-xs text-bark-muted">
+            <p className="text-xs text-ink-muted">
               Update the base permit quota for any specific date and expedition. Changes reflect immediately on the live booking calendar.
             </p>
 
             <div>
-              <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+              <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                 Select Expedition
               </label>
               <select
                 value={quotaExpId}
                 onChange={(e) => setQuotaExpId(e.target.value)}
-                className="w-full rounded-xl bg-white border border-canopy/20 px-3 py-2.5 text-xs font-semibold text-canopy"
+                className="w-full rounded-xl bg-field border border-line/20 px-3 py-2.5 text-xs font-semibold text-heading"
               >
                 {EXPEDITIONS.map((exp) => (
                   <option key={exp.id} value={exp.id}>
@@ -337,18 +337,18 @@ export default function AdminDashboardPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                   Target Date
                 </label>
                 <input
                   type="date"
                   value={quotaDate}
                   onChange={(e) => setQuotaDate(e.target.value)}
-                  className="w-full rounded-xl bg-white border border-canopy/20 px-3 py-2 text-xs font-mono-tech text-canopy"
+                  className="w-full rounded-xl bg-field border border-line/20 px-3 py-2 text-xs font-label text-heading"
                 />
               </div>
               <div>
-                <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                   Permit Quota (0 = Sold Out)
                 </label>
                 <input
@@ -357,7 +357,7 @@ export default function AdminDashboardPage() {
                   max={16}
                   value={quotaPermits}
                   onChange={(e) => setQuotaPermits(Number(e.target.value))}
-                  className="w-full rounded-xl bg-white border border-canopy/20 px-3 py-2 text-xs font-mono-tech text-canopy"
+                  className="w-full rounded-xl bg-field border border-line/20 px-3 py-2 text-xs font-label text-heading"
                 />
               </div>
             </div>
@@ -371,14 +371,14 @@ export default function AdminDashboardPage() {
           </form>
 
           {/* Live Stripe Webhook Event Log */}
-          <div className="lg:col-span-7 bg-parchment-light rounded-3xl border border-canopy/15 p-6 sm:p-8 shadow-card space-y-4">
+          <div className="lg:col-span-7 bg-surface-raised rounded-3xl border border-line/15 p-6 sm:p-8 shadow-card space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="flex items-center gap-2 text-xs font-mono-tech uppercase text-terracotta font-semibold">
+                <div className="flex items-center gap-2 text-xs font-label uppercase text-terracotta font-semibold">
                   <Webhook className="w-4 h-4" />
                   <span>Stripe Webhook Event Log (`/api/webhooks/stripe`)</span>
                 </div>
-                <h3 className="font-serif text-xl font-semibold text-canopy mt-1">
+                <h3 className="font-display text-xl font-semibold text-heading mt-1">
                   Recent Payment &amp; Session Events ({webhookEvents.length})
                 </h3>
               </div>
@@ -388,21 +388,21 @@ export default function AdminDashboardPage() {
               {webhookEvents.map((ev) => (
                 <div
                   key={ev.id}
-                  className="p-3.5 rounded-xl bg-parchment border border-canopy/10 flex flex-wrap items-center justify-between gap-2 text-xs"
+                  className="p-3.5 rounded-xl bg-surface border border-line/10 flex flex-wrap items-center justify-between gap-2 text-xs"
                 >
                   <div>
-                    <div className="font-mono-tech font-bold text-canopy">
+                    <div className="font-label font-bold text-heading">
                       {ev.eventType} → <span className="text-terracotta">{ev.bookingReference}</span>
                     </div>
-                    <div className="font-mono-tech text-[11px] text-bark-muted">
+                    <div className="font-label text-[11px] text-ink-muted">
                       Event ID: {ev.id} · Object: {ev.stripeObjectId}
                     </div>
                   </div>
-                  <div className="text-right font-mono-tech text-[11px]">
-                    <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-semibold">
+                  <div className="text-right font-label text-[11px]">
+                    <span className="px-2 py-0.5 rounded bg-pos-soft text-pos font-semibold">
                       200 OK ({ev.status})
                     </span>
-                    <div className="text-bark-muted mt-0.5">
+                    <div className="text-ink-muted mt-0.5">
                       {new Date(ev.processedAt).toLocaleString()}
                     </div>
                   </div>
@@ -413,9 +413,9 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* 3. Custom Tailor-Made Inquiries Workflow */}
-        <div className="bg-parchment-light rounded-3xl border border-canopy/15 p-6 sm:p-8 shadow-card space-y-4">
-          <h2 className="font-serif text-2xl font-semibold text-canopy flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-700" />
+        <div className="bg-surface-raised rounded-3xl border border-line/15 p-6 sm:p-8 shadow-card space-y-4">
+          <h2 className="font-display text-2xl font-semibold text-heading flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-pos" />
             <span>Custom Tailor-Made Safari Inquiries ({inquiries.length})</span>
           </h2>
 
@@ -423,40 +423,40 @@ export default function AdminDashboardPage() {
             {inquiries.map((inq) => (
               <div
                 key={inq.inquiryReference}
-                className="p-5 rounded-2xl bg-parchment border border-canopy/12 text-xs space-y-3"
+                className="p-5 rounded-2xl bg-surface border border-line/12 text-xs space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-mono-tech font-bold text-canopy text-sm">
+                  <span className="font-label font-bold text-heading text-sm">
                     {inq.inquiryReference} · {inq.fullName}
                   </span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-acacia-light border border-acacia/40 font-mono-tech text-[10px] font-bold text-canopy uppercase">
+                  <span className="px-2.5 py-0.5 rounded-full bg-acacia-light border border-acacia/40 font-label text-[10px] font-bold text-heading uppercase">
                     {inq.status.replace('_', ' ')}
                   </span>
                 </div>
-                <div className="text-bark-muted">
+                <div className="text-ink-muted">
                   {inq.email} · {inq.preferredMonth} ({inq.durationDays}) · {inq.guests} Guests
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {(inq.interests || []).map((intItem, i) => (
                     <span
                       key={i}
-                      className="px-2 py-0.5 rounded bg-white border border-canopy/10 font-mono-tech text-[10px]"
+                      className="px-2 py-0.5 rounded bg-field border border-line/10 font-label text-[10px]"
                     >
                       {intItem}
                     </span>
                   ))}
                 </div>
-                <div className="pt-2 border-t border-canopy/10 flex items-center gap-2">
-                  <span className="text-[11px] font-mono-tech text-bark-muted">Set Status:</span>
+                <div className="pt-2 border-t border-line/10 flex items-center gap-2">
+                  <span className="text-[11px] font-label text-ink-muted">Set Status:</span>
                   {(['new', 'proposal_sent', 'converted'] as const).map((st) => (
                     <button
                       key={st}
                       type="button"
                       onClick={() => handleUpdateInquiryStatus(inq.inquiryReference, st)}
-                      className={`px-2.5 py-1 rounded-md font-mono-tech text-[10px] uppercase ${
+                      className={`px-2.5 py-1 rounded-md font-label text-[10px] uppercase ${
                         inq.status === st
                           ? 'bg-canopy text-acacia font-bold'
-                          : 'bg-white border border-canopy/15 text-bark hover:border-canopy'
+                          : 'bg-field border border-line/15 text-ink hover:border-line'
                       }`}
                     >
                       {st.replace('_', ' ')}
@@ -469,14 +469,14 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* 4. Stripe Product Catalog Mapping */}
-        <div className="bg-parchment-light rounded-3xl border border-canopy/15 p-6 sm:p-8 shadow-card space-y-5">
+        <div className="bg-surface-raised rounded-3xl border border-line/15 p-6 sm:p-8 shadow-card space-y-5">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-serif text-2xl font-semibold text-canopy flex items-center gap-2">
+              <h2 className="font-display text-2xl font-semibold text-heading flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-terracotta" />
                 <span>Stripe Product Catalog &amp; Default UWA Sector Permit Quotas</span>
               </h2>
-              <p className="text-xs text-bark-muted">
+              <p className="text-xs text-ink-muted">
                 Configured in <code>src/data/expeditions.ts</code> &amp; <code>src/lib/stripe.ts</code>
               </p>
             </div>
@@ -485,7 +485,7 @@ export default function AdminDashboardPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-canopy/15 font-mono-tech uppercase text-bark-muted">
+                <tr className="border-b border-line/15 font-label uppercase text-ink-muted">
                   <th className="py-3 px-3">Expedition</th>
                   <th className="py-3 px-3">Stripe Product ID</th>
                   <th className="py-3 px-3">Env Price Key</th>
@@ -494,28 +494,28 @@ export default function AdminDashboardPage() {
                   <th className="py-3 px-3">Daily Sector Quota</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-canopy/10">
+              <tbody className="divide-y divide-line/10">
                 {EXPEDITIONS.map((exp) => (
-                  <tr key={exp.id} className="hover:bg-parchment/60">
-                    <td className="py-3.5 px-3 font-serif font-semibold text-sm text-canopy">
+                  <tr key={exp.id} className="hover:bg-surface/60">
+                    <td className="py-3.5 px-3 font-display font-semibold text-sm text-heading">
                       {exp.title} ({exp.durationDays}D)
                     </td>
-                    <td className="py-3.5 px-3 font-mono-tech text-bark">
+                    <td className="py-3.5 px-3 font-label text-ink">
                       {exp.stripeProductId}
                     </td>
-                    <td className="py-3.5 px-3 font-mono-tech text-bark-muted">
+                    <td className="py-3.5 px-3 font-label text-ink-muted">
                       {exp.stripePriceEnvKey}
                     </td>
-                    <td className="py-3.5 px-3 font-mono-tech font-semibold text-canopy">
+                    <td className="py-3.5 px-3 font-label font-semibold text-heading">
                       ${exp.basePriceUsd.toLocaleString()} USD
                     </td>
-                    <td className="py-3.5 px-3 font-mono-tech text-terracotta">
+                    <td className="py-3.5 px-3 font-label text-terracotta">
                       {exp.gorillaPermitUsd + exp.chimpPermitUsd > 0
                         ? `+$${exp.gorillaPermitUsd + exp.chimpPermitUsd} USD`
                         : 'Included'}
                     </td>
-                    <td className="py-3.5 px-3 font-mono-tech">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-parchment-dark text-canopy">
+                    <td className="py-3.5 px-3 font-label">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-surface-sunk text-heading">
                         <Users className="w-3 h-3 text-terracotta" />
                         {exp.dailyPermitQuota} permits/day ({exp.trekkingSector})
                       </span>

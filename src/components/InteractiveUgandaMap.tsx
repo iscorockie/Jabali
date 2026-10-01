@@ -72,7 +72,7 @@ const MAP_PINS: MapPinConfig[] = [
   },
 ];
 
-export default function InteractiveUgandaMap() {
+export default function InteractiveUgandaMap({ compact = false }: { compact?: boolean }) {
   const [activePinId, setActivePinId] = useState<string>('dest-bwindi');
 
   const activePin = MAP_PINS.find((p) => p.destId === activePinId) || MAP_PINS[0];
@@ -84,22 +84,25 @@ export default function InteractiveUgandaMap() {
     ) || EXPEDITIONS[0];
 
   return (
-    <div className="bg-canopy-topographic text-parchment rounded-3xl border border-white/15 p-6 sm:p-10 shadow-elevated">
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-8">
+    <div className="bg-canopy-topographic grain relative text-parchment rounded-3xl border border-white/15 p-5 sm:p-8 shadow-elevated" >
+      <div className="relative z-10 mb-6 flex flex-col gap-3 lg:mb-8 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <span className="font-mono-tech text-xs uppercase tracking-[0.2em] text-acacia">
-            Interactive Telemetry &amp; Bush Flight Corridor Map
+          <span className="eyebrow !text-acacia">
+            <Compass className="h-3.5 w-3.5" />
+            {compact ? 'Corridor map for this expedition' : 'Interactive bush-flight corridor map'}
           </span>
-          <h3 className="font-serif text-2xl sm:text-4xl font-semibold text-white mt-1">
-            Explore Uganda’s Rift Valley &amp; East Africa Air Links
+          <h3 className="mt-1 font-display text-2xl font-semibold text-white sm:text-3xl lg:text-4xl">
+            {compact
+              ? 'Where this trek sits in the Rift'
+              : 'Explore Uganda’s Rift Valley & East Africa air links'}
           </h3>
         </div>
-        <span className="font-mono-tech text-xs text-parchment/75">
-          Click any park sector pin to inspect flight times, elevation &amp; UWA permits
+        <span className="font-label text-parchment/70">
+          Tap any park pin for flight times, elevation &amp; UWA permit notes
         </span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <div className="relative z-10 grid grid-cols-1 items-center gap-7 lg:grid-cols-12 lg:gap-8">
         {/* Left 7 Columns: Interactive Stylistic Cartographic Map */}
         <div className="lg:col-span-7 relative rounded-2xl bg-canopy-moss/90 border border-white/15 p-4 sm:p-6 overflow-hidden min-h-[380px] sm:min-h-[430px] flex items-center justify-center">
           {/* Topographic Grid Lines */}
@@ -219,7 +222,7 @@ export default function InteractiveUgandaMap() {
                 type="button"
                 onClick={() => setActivePinId(pin.destId)}
                 style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
-                className={`-translate-x-1/2 -translate-y-1/2 absolute z-10 px-2.5 py-1.5 rounded-full text-[11px] font-mono-tech font-semibold flex items-center gap-1.5 transition-all shadow-md ${
+                className={`-translate-x-1/2 -translate-y-1/2 absolute z-10 px-2.5 py-1.5 rounded-full text-[11px] font-label font-semibold flex items-center gap-1.5 transition-all shadow-md ${
                   isSelected
                     ? 'bg-terracotta text-white ring-4 ring-terracotta/40 scale-110 z-20'
                     : 'bg-canopy/90 hover:bg-acacia hover:text-canopy text-parchment border border-acacia/50'
@@ -235,20 +238,20 @@ export default function InteractiveUgandaMap() {
         {/* Right 5 Columns: Selected Sector Live Dossier */}
         <div className="lg:col-span-5 bg-white/5 rounded-2xl border border-white/15 p-6 space-y-5">
           <div className="flex items-center justify-between gap-2">
-            <span className="px-3 py-1 rounded-full bg-acacia/20 border border-acacia/40 text-acacia font-mono-tech text-xs">
+            <span className="px-3 py-1 rounded-full bg-acacia/20 border border-acacia/40 text-acacia font-label text-xs">
               {activeDest.coordinates}
             </span>
-            <span className="font-mono-tech text-xs text-parchment/75 flex items-center gap-1">
+            <span className="font-label text-xs text-parchment/75 flex items-center gap-1">
               <Mountain className="w-3.5 h-3.5 text-acacia" />
               {activeDest.elevation}
             </span>
           </div>
 
           <div>
-            <h4 className="font-serif text-2xl sm:text-3xl font-semibold text-white">
+            <h4 className="font-display text-2xl sm:text-3xl font-semibold text-white">
               {activeDest.name}
             </h4>
-            <p className="text-xs font-mono-tech text-acacia mt-0.5">{activeDest.region}</p>
+            <p className="text-xs font-label text-acacia mt-0.5">{activeDest.region}</p>
             <p className="text-sm text-parchment/80 mt-3 leading-relaxed">
               {activeDest.tagline}
             </p>

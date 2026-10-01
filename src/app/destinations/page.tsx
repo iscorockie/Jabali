@@ -148,7 +148,7 @@ export default function DestinationsPage() {
   }, [regionFilter, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-parchment bg-topographic">
+    <div className="min-h-screen bg-surface bg-topographic">
       {/* Hero */}
       <section className="relative bg-canopy text-parchment py-16 sm:py-24 overflow-hidden">
         <div className="absolute inset-0 opacity-35">
@@ -162,11 +162,11 @@ export default function DestinationsPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-acacia/20 border border-acacia/40 text-acacia font-mono-tech text-xs">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-acacia/20 border border-acacia/40 text-acacia font-label text-xs">
               <Compass className="w-3.5 h-3.5" />
               LIVE FIELD SECTORS · SEASONALITY &amp; UWA PERMIT TELEMETRY
             </span>
-            <h1 className="font-serif text-4xl sm:text-6xl font-semibold tracking-tight">
+            <h1 className="font-display text-4xl sm:text-6xl font-semibold tracking-tight">
               Destinations &amp; National Parks
             </h1>
             <p className="text-parchment/85 text-base sm:text-lg leading-relaxed">
@@ -177,7 +177,7 @@ export default function DestinationsPage() {
       </section>
 
       {/* Interactive Seasonality & Live Permit Telemetry Bar */}
-      <section className="sticky top-20 z-30 bg-parchment-light/95 backdrop-blur-md border-b border-canopy/15 py-4 shadow-sm">
+      <section className="sticky top-20 z-30 bg-surface-raised/95 backdrop-blur-md border-b border-line/15 py-4 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
             {/* Region Filter Pills */}
@@ -190,7 +190,7 @@ export default function DestinationsPage() {
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                     regionFilter === rf.id
                       ? 'bg-canopy text-parchment shadow-sm'
-                      : 'bg-parchment-dark/70 text-bark hover:bg-parchment-dark'
+                      : 'bg-surface-sunk/70 text-ink hover:bg-surface-sunk'
                   }`}
                 >
                   {rf.label}
@@ -206,16 +206,16 @@ export default function DestinationsPage() {
                   placeholder="Search species, sectors, parks..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="rounded-lg bg-white border border-canopy/20 pl-8 pr-3 py-1.5 text-xs text-canopy w-52"
+                  className="rounded-lg bg-field border border-line/20 pl-8 pr-3 py-1.5 text-xs text-heading w-52"
                 />
-                <Search className="w-3.5 h-3.5 text-bark-muted absolute left-2.5 top-2" />
+                <Search className="w-3.5 h-3.5 text-ink-muted absolute left-2.5 top-2" />
               </div>
 
               <select
                 aria-label="Target travel year"
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(Number(e.target.value))}
-                className="rounded-lg bg-white border border-canopy/20 px-2.5 py-1.5 text-xs font-mono-tech font-semibold text-canopy"
+                className="rounded-lg bg-field border border-line/20 px-2.5 py-1.5 text-xs font-label font-semibold text-heading"
               >
                 <option value={2026}>2026 Departures</option>
                 <option value={2027}>2027 Departures</option>
@@ -224,9 +224,9 @@ export default function DestinationsPage() {
           </div>
 
           {/* 12-Month Interactive Seasonality Selector */}
-          <div className="pt-2 border-t border-canopy/10 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div className="pt-2 border-t border-line/10 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
             <div className="flex items-center gap-1 overflow-x-auto">
-              <span className="text-[11px] font-mono-tech uppercase text-bark-muted mr-2 shrink-0">
+              <span className="text-[11px] font-label uppercase text-ink-muted mr-2 shrink-0">
                 Inspect Month:
               </span>
               {MONTHS.map((m) => (
@@ -234,10 +234,10 @@ export default function DestinationsPage() {
                   key={m.num}
                   type="button"
                   onClick={() => setSelectedMonth(m.num)}
-                  className={`px-2.5 py-1 rounded-md text-xs font-mono-tech transition-all ${
+                  className={`px-2.5 py-1 rounded-md text-xs font-label transition-all ${
                     selectedMonth === m.num
                       ? 'bg-terracotta text-white font-bold shadow-sm'
-                      : 'bg-parchment text-bark hover:bg-parchment-dark'
+                      : 'bg-surface text-ink hover:bg-surface-sunk'
                   }`}
                 >
                   {m.short}
@@ -245,25 +245,25 @@ export default function DestinationsPage() {
               ))}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 text-xs font-mono-tech">
+            <div className="flex flex-wrap items-center gap-3 text-xs font-label">
               <span
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-semibold ${
                   currentMonthMeta.season === 'Peak Dry'
                     ? 'bg-amber-100 text-amber-900'
-                    : 'bg-emerald-100 text-emerald-900'
+                    : 'bg-pos-soft text-pos'
                 }`}
               >
                 {currentMonthMeta.season === 'Peak Dry' ? (
                   <Sun className="w-3.5 h-3.5 text-amber-600" />
                 ) : (
-                  <CloudRain className="w-3.5 h-3.5 text-emerald-600" />
+                  <CloudRain className="w-3.5 h-3.5 text-pos" />
                 )}
                 {currentMonthMeta.short} {selectedYear}: {currentMonthMeta.season}
               </span>
-              <span className="text-bark-muted hidden sm:inline">
+              <span className="text-ink-muted hidden sm:inline">
                 Avg {currentMonthMeta.temp} · Rain: {currentMonthMeta.rain}
               </span>
-              <span className="text-canopy font-medium">
+              <span className="text-heading font-medium">
                 {currentMonthMeta.note}
               </span>
             </div>
@@ -275,8 +275,8 @@ export default function DestinationsPage() {
       <section className="py-14 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
           {filteredDestinations.length === 0 ? (
-            <div className="bg-parchment-light rounded-2xl p-12 text-center border border-canopy/15 space-y-4">
-              <h3 className="font-serif text-2xl text-canopy">
+            <div className="bg-surface-raised rounded-2xl p-12 text-center border border-line/15 space-y-4">
+              <h3 className="font-display text-2xl text-heading">
                 No field territories match your filter
               </h3>
               <button
@@ -304,7 +304,7 @@ export default function DestinationsPage() {
                 <article
                   key={dest.id}
                   id={dest.slug}
-                  className="scroll-mt-32 bg-parchment-light rounded-3xl border border-canopy/15 shadow-card overflow-hidden"
+                  className="scroll-mt-32 bg-surface-raised rounded-3xl border border-line/15 shadow-card overflow-hidden"
                 >
                   <div className="grid grid-cols-1 lg:grid-cols-12">
                     {/* Image Column */}
@@ -321,19 +321,19 @@ export default function DestinationsPage() {
                       <div className="absolute inset-0 bg-gradient-to-t from-canopy/90 via-canopy/25 to-transparent" />
 
                       <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-                        <span className="px-3 py-1 rounded-full text-xs font-mono-tech font-semibold bg-canopy/85 text-acacia border border-acacia/30">
+                        <span className="px-3 py-1 rounded-full text-xs font-label font-semibold bg-canopy/85 text-acacia border border-acacia/30">
                           {dest.country}
                         </span>
-                        <span className="px-3 py-1 rounded-md text-xs font-mono-tech bg-black/60 text-parchment">
+                        <span className="px-3 py-1 rounded-md text-xs font-label bg-black/60 text-parchment">
                           {dest.coordinates}
                         </span>
                       </div>
 
                       <div className="absolute bottom-5 left-5 right-5 space-y-2 text-parchment">
-                        <div className="text-xs font-mono-tech text-acacia uppercase">
+                        <div className="text-xs font-label text-acacia uppercase">
                           {dest.region}
                         </div>
-                        <div className="grid grid-cols-2 gap-2 pt-1 text-xs font-mono-tech">
+                        <div className="grid grid-cols-2 gap-2 pt-1 text-xs font-label">
                           <div className="p-2.5 rounded-lg bg-black/50 backdrop-blur-sm border border-white/10">
                             <span className="block text-[10px] text-parchment/60">
                               ELEVATION
@@ -354,21 +354,21 @@ export default function DestinationsPage() {
                     <div className="lg:col-span-7 p-6 sm:p-10 space-y-6">
                       <div className="space-y-2">
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 text-xs font-mono-tech text-terracotta uppercase tracking-wider">
+                          <div className="flex items-center gap-2 text-xs font-label text-terracotta uppercase tracking-wider">
                             <MapPin className="w-3.5 h-3.5" />
                             <span>Field Territory 0{index + 1}</span>
                           </div>
 
                           {/* Live API Permit Telemetry Badge */}
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-900 font-mono-tech text-xs">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pos-soft border border-pos/30 text-pos font-label text-xs">
                             {loadingPermits ? (
                               <>
-                                <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-700" />
+                                <Loader2 className="w-3.5 h-3.5 animate-spin text-pos" />
                                 <span>Checking {currentMonthMeta.short} {selectedYear} UWA Quota...</span>
                               </>
                             ) : (
                               <>
-                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+                                <CheckCircle2 className="w-3.5 h-3.5 text-pos" />
                                 <span>
                                   {currentMonthMeta.short} {selectedYear}:{' '}
                                   <strong>
@@ -381,20 +381,20 @@ export default function DestinationsPage() {
                           </div>
                         </div>
 
-                        <h2 className="font-serif text-3xl sm:text-4xl font-semibold text-canopy">
+                        <h2 className="font-display text-3xl sm:text-4xl font-semibold text-heading">
                           {dest.name}
                         </h2>
-                        <p className="text-sm sm:text-base font-medium text-canopy/90">
+                        <p className="text-sm sm:text-base font-medium text-heading/90">
                           {dest.tagline}
                         </p>
-                        <p className="text-sm text-bark-muted leading-relaxed pt-1">
+                        <p className="text-sm text-ink-muted leading-relaxed pt-1">
                           {dest.description}
                         </p>
                       </div>
 
                       {/* Signature Wildlife */}
                       <div>
-                        <div className="text-xs font-mono-tech uppercase tracking-wider text-bark-muted mb-2 flex items-center gap-1.5">
+                        <div className="text-xs font-label uppercase tracking-wider text-ink-muted mb-2 flex items-center gap-1.5">
                           <Binoculars className="w-3.5 h-3.5 text-terracotta" />
                           <span>Key Wildlife &amp; Endemics</span>
                         </div>
@@ -402,7 +402,7 @@ export default function DestinationsPage() {
                           {dest.signatureSpecies.map((sp, i) => (
                             <span
                               key={i}
-                              className="px-3 py-1 rounded-full text-xs font-mono-tech bg-parchment-dark text-canopy border border-canopy/10"
+                              className="px-3 py-1 rounded-full text-xs font-label bg-surface-sunk text-heading border border-line/10"
                             >
                               {sp}
                             </span>
@@ -412,7 +412,7 @@ export default function DestinationsPage() {
 
                       {/* Sectors Breakdown */}
                       <div className="space-y-2.5">
-                        <div className="text-xs font-mono-tech uppercase tracking-wider text-bark-muted flex items-center gap-1.5">
+                        <div className="text-xs font-label uppercase tracking-wider text-ink-muted flex items-center gap-1.5">
                           <Mountain className="w-3.5 h-3.5 text-terracotta" />
                           <span>Trekking Sectors &amp; Ecological Zones</span>
                         </div>
@@ -420,12 +420,12 @@ export default function DestinationsPage() {
                           {dest.sectorsOrZones.map((sec, idx) => (
                             <div
                               key={idx}
-                              className="p-3.5 rounded-xl bg-parchment border border-canopy/10"
+                              className="p-3.5 rounded-xl bg-surface border border-line/10"
                             >
-                              <div className="font-serif font-semibold text-sm text-canopy">
+                              <div className="font-display font-semibold text-sm text-heading">
                                 {sec.name}
                               </div>
-                              <p className="text-xs text-bark-muted mt-1 leading-relaxed">
+                              <p className="text-xs text-ink-muted mt-1 leading-relaxed">
                                 {sec.detail}
                               </p>
                             </div>
@@ -434,33 +434,33 @@ export default function DestinationsPage() {
                       </div>
 
                       {/* Logistics & Best Months */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-canopy/10 text-xs">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-line/10 text-xs">
                         <div className="flex items-start gap-2.5">
                           <Plane className="w-4 h-4 text-terracotta shrink-0 mt-0.5" />
                           <div>
-                            <strong className="block text-canopy">
+                            <strong className="block text-heading">
                               Access from Entebbe (EBB)
                             </strong>
-                            <span className="text-bark-muted">{dest.travelLogistics}</span>
+                            <span className="text-ink-muted">{dest.travelLogistics}</span>
                           </div>
                         </div>
                         <div className="flex items-start gap-2.5">
                           <Calendar className="w-4 h-4 text-terracotta shrink-0 mt-0.5" />
                           <div>
-                            <strong className="block text-canopy">Prime Seasonality</strong>
-                            <span className="text-bark-muted">{dest.bestTime}</span>
+                            <strong className="block text-heading">Prime Seasonality</strong>
+                            <span className="text-ink-muted">{dest.bestTime}</span>
                           </div>
                         </div>
                       </div>
 
                       {/* Matching Expeditions + Live Date Book CTA */}
-                      <div className="pt-3 flex flex-wrap items-center justify-between gap-4 border-t border-canopy/10">
+                      <div className="pt-3 flex flex-wrap items-center justify-between gap-4 border-t border-line/10">
                         <div className="flex flex-wrap items-center gap-2">
                           {matchingExpeditions.map((exp) => (
                             <Link
                               key={exp.id}
                               href={`/expeditions/${exp.slug}`}
-                              className="inline-flex items-center gap-1.5 text-xs font-semibold text-canopy hover:text-terracotta bg-acacia-light px-3 py-1.5 rounded-lg border border-acacia/30 transition-colors"
+                              className="inline-flex items-center gap-1.5 text-xs font-semibold text-heading hover:text-terracotta bg-acacia-light px-3 py-1.5 rounded-lg border border-acacia/30 transition-colors"
                             >
                               <Sparkles className="w-3 h-3 text-terracotta" />
                               <span>

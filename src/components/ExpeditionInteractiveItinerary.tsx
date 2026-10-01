@@ -28,23 +28,23 @@ export default function ExpeditionInteractiveItinerary({
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <span className="font-mono-tech text-xs uppercase tracking-widest text-terracotta font-semibold">
+          <span className="font-label text-xs uppercase tracking-widest text-terracotta font-semibold">
             Interactive Field Route &amp; Elevation Log
           </span>
-          <h2 className="font-serif text-2xl sm:text-4xl font-semibold text-canopy mt-1">
+          <h2 className="font-display text-2xl sm:text-4xl font-semibold text-heading mt-1">
             Day-by-Day Expedition Dossier
           </h2>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex rounded-xl bg-parchment-dark p-1 border border-canopy/15 text-xs">
+          <div className="inline-flex rounded-xl bg-surface-sunk p-1 border border-line/15 text-xs">
             <button
               type="button"
               onClick={() => setLodgeTier('signature')}
-              className={`px-3 py-1.5 rounded-lg font-mono-tech transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-label transition-all ${
                 lodgeTier === 'signature'
                   ? 'bg-canopy text-parchment font-semibold'
-                  : 'text-bark hover:text-canopy'
+                  : 'text-ink hover:text-heading'
               }`}
             >
               Signature Eco-Lodges
@@ -52,10 +52,10 @@ export default function ExpeditionInteractiveItinerary({
             <button
               type="button"
               onClick={() => setLodgeTier('luxury')}
-              className={`px-3 py-1.5 rounded-lg font-mono-tech transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-label transition-all ${
                 lodgeTier === 'luxury'
                   ? 'bg-terracotta text-white font-semibold'
-                  : 'text-bark hover:text-canopy'
+                  : 'text-ink hover:text-heading'
               }`}
             >
               Premier Luxury (+${expedition.luxuryLodgeUpgradePerPersonUsd})
@@ -69,7 +69,7 @@ export default function ExpeditionInteractiveItinerary({
                 ? collapseAll
                 : expandAll
             }
-            className="px-3 py-2 rounded-xl border border-canopy/20 text-xs font-mono-tech text-canopy hover:bg-parchment-dark"
+            className="px-3 py-2 rounded-xl border border-line/20 text-xs font-label text-heading hover:bg-surface-sunk"
           >
             {expandedDays.length === expedition.itinerary.length
               ? 'Collapse Days'
@@ -84,7 +84,7 @@ export default function ExpeditionInteractiveItinerary({
           return (
             <div
               key={item.day}
-              className="bg-parchment-light rounded-2xl border border-canopy/12 shadow-sm hover:border-canopy/30 transition-all overflow-hidden"
+              className="bg-surface-raised rounded-2xl border border-line/12 shadow-sm hover:border-line/30 transition-all overflow-hidden"
             >
               <button
                 type="button"
@@ -92,33 +92,33 @@ export default function ExpeditionInteractiveItinerary({
                 className="w-full p-5 sm:p-6 flex flex-wrap items-center justify-between gap-2 text-left"
               >
                 <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 rounded-lg bg-canopy text-acacia font-mono-tech text-xs font-bold">
+                  <span className="px-3 py-1 rounded-lg bg-canopy text-acacia font-label text-xs font-bold">
                     DAY {String(item.day).padStart(2, '0')}
                   </span>
-                  <h3 className="font-serif text-lg sm:text-xl font-semibold text-canopy">
+                  <h3 className="font-display text-lg sm:text-xl font-semibold text-heading">
                     {item.title}
                   </h3>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono-tech text-xs text-bark-muted bg-parchment-dark px-2.5 py-1 rounded-md flex items-center gap-1">
+                  <span className="font-label text-xs text-ink-muted bg-surface-sunk px-2.5 py-1 rounded-md flex items-center gap-1">
                     <Mountain className="w-3 h-3 text-terracotta" />
                     {item.altitude}
                   </span>
                   {isOpen ? (
-                    <ChevronUp className="w-4 h-4 text-canopy" />
+                    <ChevronUp className="w-4 h-4 text-heading" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-canopy" />
+                    <ChevronDown className="w-4 h-4 text-heading" />
                   )}
                 </div>
               </button>
 
               {isOpen && (
-                <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-canopy/10 space-y-4">
-                  <p className="text-sm text-bark-muted leading-relaxed">
+                <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-line/10 space-y-4">
+                  <p className="text-sm text-ink-muted leading-relaxed">
                     {item.description}
                   </p>
 
-                  <div className="pt-3 border-t border-canopy/8 flex flex-wrap items-center justify-between gap-3 text-xs text-bark">
+                  <div className="pt-3 border-t border-line/8 flex flex-wrap items-center justify-between gap-3 text-xs text-ink">
                     <div className="flex items-center gap-1.5">
                       {lodgeTier === 'luxury' ? (
                         <Sparkles className="w-3.5 h-3.5 text-terracotta" />
@@ -136,8 +136,8 @@ export default function ExpeditionInteractiveItinerary({
                           : item.accommodation}
                       </span>
                     </div>
-                    <div className="font-mono-tech text-bark-muted">
-                      Meals: <strong className="text-canopy">{item.meals}</strong>
+                    <div className="font-label text-ink-muted">
+                      Meals: <strong className="text-heading">{item.meals}</strong>
                     </div>
                   </div>
                 </div>

@@ -75,16 +75,16 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-parchment bg-topographic">
+    <div className="min-h-screen bg-surface bg-topographic">
       {/* Hero */}
       <section className="bg-canopy text-parchment py-16 sm:py-20 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-acacia/20 border border-acacia/40 text-acacia font-mono-tech text-xs">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-acacia/20 border border-acacia/40 text-acacia font-label text-xs">
               <Compass className="w-3.5 h-3.5" />
               BESPOKE PRIVATE CHARTERS · KAMPALA &amp; BUHOMA DESK
             </span>
-            <h1 className="font-serif text-4xl sm:text-5xl font-semibold tracking-tight">
+            <h1 className="font-display text-4xl sm:text-5xl font-semibold tracking-tight">
               Design a Custom East African Expedition
             </h1>
             <p className="text-parchment/80 text-base sm:text-lg leading-relaxed">
@@ -101,23 +101,23 @@ export default function ContactPage() {
             {/* Left 7 Columns: Custom Inquiry Form */}
             <div className="lg:col-span-7">
               {submittedRef ? (
-                <div className="bg-parchment-light rounded-3xl border-2 border-emerald-700/30 p-8 sm:p-12 shadow-elevated space-y-6">
-                  <div className="w-14 h-14 rounded-2xl bg-emerald-600/15 text-emerald-700 flex items-center justify-center">
+                <div className="bg-surface-raised rounded-3xl border-2 border-pos/30 p-8 sm:p-12 shadow-elevated space-y-6">
+                  <div className="w-14 h-14 rounded-2xl bg-pos-soft/15 text-pos flex items-center justify-center">
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
                   <div className="space-y-2">
-                    <span className="font-mono-tech text-xs uppercase text-terracotta font-semibold">
+                    <span className="font-label text-xs uppercase text-terracotta font-semibold">
                       Custom Dossier Request Received · Ref {submittedRef}
                     </span>
-                    <h2 className="font-serif text-3xl font-semibold text-canopy">
+                    <h2 className="font-display text-3xl font-semibold text-heading">
                       Webale Nyo! Our Kampala Desk Is Checking UWA Permits.
                     </h2>
-                    <p className="text-sm sm:text-base text-bark-muted leading-relaxed">
+                    <p className="text-sm sm:text-base text-ink-muted leading-relaxed">
                       Lead Expedition Planner <strong>Grace Namatovu</strong> has received your custom brief and is verifying Bwindi &amp; Kibale permit availability for <strong>{preferredMonth}</strong>. You will receive a custom day-by-day route and itemized quote within 24 hours.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-parchment border border-canopy/10 text-xs font-mono-tech space-y-1 text-canopy">
+                  <div className="p-4 rounded-xl bg-surface border border-line/10 text-xs font-label space-y-1 text-heading">
                     <div>INQUIRY REFERENCE: {submittedRef}</div>
                     <div>TRAVEL WINDOW: {preferredMonth} ({durationDays})</div>
                     <div>FOCUS: {interests.join(' · ')}</div>
@@ -133,7 +133,7 @@ export default function ContactPage() {
                     <button
                       type="button"
                       onClick={() => setSubmittedRef(null)}
-                      className="px-5 py-3 rounded-xl border border-canopy/20 text-canopy text-sm font-semibold"
+                      className="px-5 py-3 rounded-xl border border-line/20 text-heading text-sm font-semibold"
                     >
                       Submit Another Inquiry
                     </button>
@@ -142,20 +142,20 @@ export default function ContactPage() {
               ) : (
                 <form
                   onSubmit={handleSubmit}
-                  className="bg-parchment-light rounded-3xl border border-canopy/15 p-6 sm:p-10 shadow-card space-y-6"
+                  className="bg-surface-raised rounded-3xl border border-line/15 p-6 sm:p-10 shadow-card space-y-6"
                 >
                   <div>
-                    <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-canopy">
+                    <h2 className="font-display text-2xl sm:text-3xl font-semibold text-heading">
                       Tailor-Made Safari Brief
                     </h2>
-                    <p className="text-xs sm:text-sm text-bark-muted mt-1">
+                    <p className="text-xs sm:text-sm text-ink-muted mt-1">
                       Tell us how you dream of experiencing Uganda &amp; East Africa.
                     </p>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                      <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                         Full Name *
                       </label>
                       <input
@@ -164,11 +164,11 @@ export default function ContactPage() {
                         placeholder="e.g. Alistair Finch"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="w-full rounded-xl bg-white border border-canopy/20 px-3.5 py-2.5 text-sm text-canopy"
+                        className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-sm text-heading"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                      <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                         Email Address *
                       </label>
                       <input
@@ -177,11 +177,11 @@ export default function ContactPage() {
                         placeholder="alistair@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full rounded-xl bg-white border border-canopy/20 px-3.5 py-2.5 text-sm text-canopy"
+                        className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-sm text-heading"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                      <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                         Phone / WhatsApp
                       </label>
                       <input
@@ -189,11 +189,11 @@ export default function ContactPage() {
                         placeholder="+44 7700 900077"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        className="w-full rounded-xl bg-white border border-canopy/20 px-3.5 py-2.5 text-sm text-canopy"
+                        className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-sm text-heading"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                      <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                         Country of Residence
                       </label>
                       <input
@@ -201,20 +201,20 @@ export default function ContactPage() {
                         placeholder="United Kingdom / USA / Canada"
                         value={country}
                         onChange={(e) => setCountry(e.target.value)}
-                        className="w-full rounded-xl bg-white border border-canopy/20 px-3.5 py-2.5 text-sm text-canopy"
+                        className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-sm text-heading"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                      <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                         Preferred Travel Window
                       </label>
                       <select
                         value={preferredMonth}
                         onChange={(e) => setPreferredMonth(e.target.value)}
-                        className="w-full rounded-xl bg-white border border-canopy/20 px-3 py-2.5 text-xs sm:text-sm text-canopy"
+                        className="w-full rounded-xl bg-field border border-line/20 px-3 py-2.5 text-xs sm:text-sm text-heading"
                       >
                         <option>November 2026 (Emerald Season)</option>
                         <option>December 2026 – Feb 2027 (Dry)</option>
@@ -224,13 +224,13 @@ export default function ContactPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                      <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                         Ideal Duration
                       </label>
                       <select
                         value={durationDays}
                         onChange={(e) => setDurationDays(e.target.value)}
-                        className="w-full rounded-xl bg-white border border-canopy/20 px-3 py-2.5 text-xs sm:text-sm text-canopy"
+                        className="w-full rounded-xl bg-field border border-line/20 px-3 py-2.5 text-xs sm:text-sm text-heading"
                       >
                         <option>5–6 Days (Focused Gorilla Trek)</option>
                         <option>8–10 Days (Primates &amp; Savannah)</option>
@@ -239,7 +239,7 @@ export default function ContactPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                      <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                         Travelers
                       </label>
                       <input
@@ -248,19 +248,19 @@ export default function ContactPage() {
                         max={24}
                         value={guests}
                         onChange={(e) => setGuests(Number(e.target.value))}
-                        className="w-full rounded-xl bg-white border border-canopy/20 px-3.5 py-2.5 text-sm text-canopy"
+                        className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-sm text-heading"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-2">
+                    <label className="block text-xs font-label uppercase text-ink-muted mb-2">
                       Target Comfort &amp; Budget Range (Per Person, Inclusive of Permits)
                     </label>
                     <select
                       value={budgetPerPerson}
                       onChange={(e) => setBudgetPerPerson(e.target.value)}
-                      className="w-full rounded-xl bg-white border border-canopy/20 px-3.5 py-2.5 text-sm text-canopy"
+                      className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-sm text-heading"
                     >
                       <option>$4,000 – $5,500 / guest (Signature Forest Eco-Lodges)</option>
                       <option>$5,500 – $8,500 / guest (Boutique Luxury Tented Camps)</option>
@@ -269,7 +269,7 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <span className="block text-xs font-mono-tech uppercase text-bark-muted mb-2">
+                    <span className="block text-xs font-label uppercase text-ink-muted mb-2">
                       Must-Have Wildlife &amp; Ecosystems
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -282,8 +282,8 @@ export default function ContactPage() {
                             onClick={() => toggleInterest(item)}
                             className={`px-3.5 py-2.5 rounded-xl text-xs font-medium text-left border transition-all flex items-center justify-between ${
                               active
-                                ? 'bg-canopy text-parchment border-canopy'
-                                : 'bg-white text-bark border-canopy/15 hover:border-canopy/40'
+                                ? 'bg-canopy text-parchment border-line'
+                                : 'bg-field text-ink border-line/15 hover:border-line/40'
                             }`}
                           >
                             <span>{item}</span>
@@ -295,7 +295,7 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                    <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                       Tell Us About Your Group, Pacing, or Special Occasion
                     </label>
                     <textarea
@@ -303,7 +303,7 @@ export default function ContactPage() {
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                       placeholder="Share preferred lodges, photography goals, mobility considerations, or cross-border flights..."
-                      className="w-full rounded-xl bg-white border border-canopy/20 px-3.5 py-2.5 text-sm text-canopy"
+                      className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-sm text-heading"
                     />
                   </div>
 
@@ -331,10 +331,10 @@ export default function ContactPage() {
             {/* Right 5 Columns: Field Offices & Instant Booking Link */}
             <aside className="lg:col-span-5 space-y-6">
               <div className="bg-canopy text-parchment rounded-3xl p-8 space-y-6 shadow-elevated">
-                <span className="font-mono-tech text-xs uppercase tracking-widest text-acacia">
+                <span className="font-label text-xs uppercase tracking-widest text-acacia">
                   Direct Operations Desks
                 </span>
-                <h3 className="font-serif text-2xl font-semibold text-white">
+                <h3 className="font-display text-2xl font-semibold text-white">
                   Speak With an East African Field Specialist
                 </h3>
 
@@ -359,10 +359,10 @@ export default function ContactPage() {
                     <Phone className="w-5 h-5 text-acacia shrink-0 mt-0.5" />
                     <div>
                       <strong className="block text-white">Direct Telephone &amp; WhatsApp</strong>
-                      <span className="font-mono-tech text-xs block">
+                      <span className="font-label text-xs block">
                         Uganda: +256 (0) 772 841 920
                       </span>
-                      <span className="font-mono-tech text-xs block">
+                      <span className="font-label text-xs block">
                         North America Toll-Free: +1 (800) 942-3810
                       </span>
                     </div>
@@ -372,7 +372,7 @@ export default function ContactPage() {
                     <Mail className="w-5 h-5 text-acacia shrink-0 mt-0.5" />
                     <div>
                       <strong className="block text-white">Expedition Planning Desk</strong>
-                      <span className="font-mono-tech text-xs">expeditions@jabalitrails.africa</span>
+                      <span className="font-label text-xs">expeditions@jabalitrails.africa</span>
                     </div>
                   </div>
 
@@ -388,7 +388,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="pt-4 border-t border-white/15 space-y-3">
-                  <div className="text-xs text-acacia font-mono-tech uppercase">
+                  <div className="text-xs text-acacia font-label uppercase">
                     Prefer Instant Online Permit Booking?
                   </div>
                   <p className="text-xs text-parchment/75">
@@ -404,12 +404,12 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              <div className="bg-parchment-light rounded-2xl p-6 border border-canopy/15 space-y-2">
-                <div className="flex items-center gap-2 text-xs font-mono-tech font-semibold text-canopy">
+              <div className="bg-surface-raised rounded-2xl p-6 border border-line/15 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-label font-semibold text-heading">
                   <ShieldCheck className="w-4 h-4 text-terracotta" />
                   <span>Financial Protection &amp; Permit Escrow</span>
                 </div>
-                <p className="text-xs text-bark-muted leading-relaxed">
+                <p className="text-xs text-ink-muted leading-relaxed">
                   All client deposits and UWA permit payments are held in a dedicated client escrow account until your departure concludes. Free date transfers are available up to 60 days prior to arrival.
                 </p>
               </div>
