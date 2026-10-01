@@ -6,6 +6,15 @@ export type ResidencyStatus = 'foreign-non-resident' | 'foreign-resident' | 'eac
 export type PaymentPlan = 'full' | 'deposit-plus-permits';
 export type PaymentGatewayMode = 'stripe-checkout' | 'stripe-elements' | 'inquiry-hold';
 
+export interface TravelerCompanion {
+  fullName: string;
+  passportNumber?: string;
+  nationality?: string;
+  dateOfBirth?: string;
+  residencyStatus?: ResidencyStatus;
+  notes?: string;
+}
+
 export interface PricingBreakdown {
   expeditionId: string;
   expeditionTitle: string;
@@ -65,6 +74,8 @@ export interface BookingRecord {
     passportNumber?: string;
     fitnessLevel: string;
     dietaryOrMedicalNotes?: string;
+    /** Registered travelling party — UWA permits are issued per named passport. */
+    companions?: TravelerCompanion[];
   };
 }
 

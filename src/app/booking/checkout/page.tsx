@@ -102,22 +102,22 @@ function StripeTestCheckoutContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-parchment text-canopy">
+      <div className="min-h-screen flex items-center justify-center bg-surface text-heading">
         <Loader2 className="w-6 h-6 animate-spin mr-2" />
-        <span className="font-serif text-lg">Loading Stripe Checkout Session...</span>
+        <span className="font-display text-lg">Loading Stripe Checkout Session...</span>
       </div>
     );
   }
 
   if (!booking) {
     return (
-      <div className="min-h-screen bg-parchment py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-lg mx-auto rounded-2xl bg-parchment-light border border-canopy/15 p-8 text-center space-y-4">
+      <div className="min-h-screen bg-surface py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-lg mx-auto rounded-2xl bg-surface-raised border border-line/15 p-8 text-center space-y-4">
           <AlertCircle className="w-10 h-10 text-terracotta mx-auto" aria-hidden="true" />
-          <h1 className="font-serif text-2xl font-semibold text-canopy">
+          <h1 className="font-display text-2xl font-semibold text-heading">
             {bookingError ? 'Unable to Load Booking' : 'Booking Not Found'}
           </h1>
-          <p role="alert" className="text-sm text-bark-muted">
+          <p role="alert" className="text-sm text-ink-muted">
             {bookingError || 'We could not find this checkout session. Check your booking reference or start a new reservation.'}
           </p>
           <Link
@@ -136,24 +136,24 @@ function StripeTestCheckoutContent() {
   const bookingRef = booking?.bookingReference || ref || 'JBL-2026-DEMO';
 
   return (
-    <div className="min-h-screen bg-parchment py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-surface py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         {/* Top Stripe Test Mode Notice Banner */}
-        <div className="mb-6 p-4 rounded-2xl bg-acacia-light border border-acacia/50 flex flex-wrap items-center justify-between gap-3 text-xs text-canopy">
+        <div className="mb-6 p-4 rounded-2xl bg-acacia-light border border-acacia/50 flex flex-wrap items-center justify-between gap-3 text-xs text-heading">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded bg-amber-600 text-white font-mono-tech font-bold uppercase">
+            <span className="px-2.5 py-0.5 rounded bg-warn text-white font-label font-bold uppercase">
               STRIPE TEST MODE
             </span>
             <span>
-              Session <code className="font-mono-tech font-semibold">{sessionId}</code> · Configure{' '}
-              <code className="font-mono-tech">STRIPE_SECRET_KEY</code> in{' '}
-              <code className="font-mono-tech">.env.local</code> for hosted{' '}
-              <code className="font-mono-tech">checkout.stripe.com</code> redirect.
+              Session <code className="font-label font-semibold">{sessionId}</code> · Configure{' '}
+              <code className="font-label">STRIPE_SECRET_KEY</code> in{' '}
+              <code className="font-label">.env.local</code> for hosted{' '}
+              <code className="font-label">checkout.stripe.com</code> redirect.
             </span>
           </div>
           <Link
             href={`/booking/cancel?ref=${encodeURIComponent(bookingRef)}`}
-            className="inline-flex items-center gap-1 font-mono-tech font-semibold text-terracotta hover:underline"
+            className="inline-flex items-center gap-1 font-label font-semibold text-terracotta hover:underline"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Simulate Cancel Redirect</span>
@@ -161,7 +161,7 @@ function StripeTestCheckoutContent() {
         </div>
 
         {/* Main Two-Column Stripe Checkout Card */}
-        <div className="bg-white rounded-3xl shadow-elevated border border-canopy/15 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+        <div className="bg-field rounded-3xl shadow-elevated border border-line/15 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
           {/* Left Column: Merchant & Line Item Summary */}
           <div className="lg:col-span-6 bg-canopy text-parchment p-8 sm:p-10 flex flex-col justify-between space-y-8">
             <div className="space-y-6">
@@ -171,24 +171,24 @@ function StripeTestCheckoutContent() {
                     <Compass className="w-5 h-5 text-acacia" />
                   </div>
                   <div>
-                    <span className="font-serif font-semibold text-lg text-white block leading-none">
+                    <span className="font-display font-semibold text-lg text-white block leading-none">
                       Jabali Trails Africa
                     </span>
-                    <span className="font-mono-tech text-[10px] text-acacia uppercase">
+                    <span className="font-label text-[10px] text-acacia uppercase">
                       Official UWA Permit &amp; Expedition Escrow
                     </span>
                   </div>
                 </div>
-                <span className="font-mono-tech text-xs px-2.5 py-1 rounded bg-white/10 text-parchment">
+                <span className="font-label text-xs px-2.5 py-1 rounded bg-white/10 text-parchment">
                   Ref: {bookingRef}
                 </span>
               </div>
 
               <div>
-                <span className="text-xs font-mono-tech uppercase text-parchment/70">
+                <span className="text-xs font-label uppercase text-parchment/70">
                   Amount Due Today
                 </span>
-                <div className="font-mono-tech text-4xl sm:text-5xl font-bold text-white mt-1">
+                <div className="font-label text-4xl sm:text-5xl font-bold text-white mt-1">
                   ${payableUsd.toLocaleString()}.00{' '}
                   <span className="text-lg font-normal text-parchment/70">USD</span>
                 </div>
@@ -200,14 +200,14 @@ function StripeTestCheckoutContent() {
                   <div className="flex justify-between items-start gap-3">
                     <div>
                       <div className="font-semibold text-white">{booking.expeditionTitle}</div>
-                      <div className="text-xs text-parchment/70 font-mono-tech">
+                      <div className="text-xs text-parchment/70 font-label">
                         Departure: {booking.departureDate} · {booking.guests} Guest(s) ·{' '}
                         {booking.paymentPlan === 'deposit-plus-permits'
                           ? '30% Safari Deposit'
                           : '100% Full Package'}
                       </div>
                     </div>
-                    <span className="font-mono-tech font-semibold text-white">
+                    <span className="font-label font-semibold text-white">
                       $
                       {(
                         booking.pricing.payableNowUsd -
@@ -223,11 +223,11 @@ function StripeTestCheckoutContent() {
                         <div className="font-semibold text-acacia">
                           Official Uganda Wildlife Authority (UWA) Permits
                         </div>
-                        <div className="text-xs text-parchment/70 font-mono-tech">
+                        <div className="text-xs text-parchment/70 font-label">
                           100% upfront government permit allocation ({booking.guests}x)
                         </div>
                       </div>
-                      <span className="font-mono-tech font-semibold text-acacia">
+                      <span className="font-label font-semibold text-acacia">
                         ${booking.pricing.permitsSubtotalUsd.toLocaleString()}
                       </span>
                     </div>
@@ -239,7 +239,7 @@ function StripeTestCheckoutContent() {
                       className="flex justify-between items-start gap-3 pt-2 border-t border-white/10"
                     >
                       <span className="text-parchment/90">{addon.name}</span>
-                      <span className="font-mono-tech font-semibold text-white">
+                      <span className="font-label font-semibold text-white">
                         ${addon.totalUsd.toLocaleString()}
                       </span>
                     </div>
@@ -253,19 +253,19 @@ function StripeTestCheckoutContent() {
                 <ShieldCheck className="w-4 h-4 text-acacia" />
                 Powered by Stripe · UWA Permit Guarantee
               </span>
-              <span className="font-mono-tech">TLS 1.3 Encrypted</span>
+              <span className="font-label">TLS 1.3 Encrypted</span>
             </div>
           </div>
 
           {/* Right Column: Card Payment Form */}
           <div className="lg:col-span-6 p-8 sm:p-10 space-y-6">
             <div>
-              <h2 className="font-serif text-2xl font-semibold text-canopy">
+              <h2 className="font-display text-2xl font-semibold text-heading">
                 Pay with Card
               </h2>
-              <p className="text-xs text-bark-muted mt-1">
+              <p className="text-xs text-ink-muted mt-1">
                 Receipt &amp; UWA Permit Docket will be sent to{' '}
-                <strong className="text-canopy">
+                <strong className="text-heading">
                   {booking?.leadGuest?.email || 'guest@example.com'}
                 </strong>
               </p>
@@ -276,7 +276,7 @@ function StripeTestCheckoutContent() {
                 <div className="flex items-center justify-between mb-1">
                   <label
                     htmlFor="checkout-card"
-                    className="text-xs font-mono-tech uppercase text-bark-muted"
+                    className="text-xs font-label uppercase text-ink-muted"
                   >
                     Card Information
                   </label>
@@ -284,14 +284,14 @@ function StripeTestCheckoutContent() {
                     <button
                       type="button"
                       onClick={() => setCardNumber('4242 4242 4242 4242')}
-                      className="text-[10px] font-mono-tech px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-semibold"
+                      className="text-[10px] font-label px-2 py-0.5 rounded bg-pos-soft text-pos font-semibold"
                     >
                       Fill 4242 (Success)
                     </button>
                     <button
                       type="button"
                       onClick={() => setCardNumber('4000 0000 0000 0002')}
-                      className="text-[10px] font-mono-tech px-2 py-0.5 rounded bg-red-100 text-red-900 font-semibold"
+                      className="text-[10px] font-label px-2 py-0.5 rounded bg-neg-soft text-neg font-semibold"
                     >
                       Fill 0002 (Decline)
                     </button>
@@ -304,9 +304,9 @@ function StripeTestCheckoutContent() {
                     required
                     value={cardNumber}
                     onChange={(e) => setCardNumber(e.target.value)}
-                    className="w-full rounded-xl bg-parchment-light border border-canopy/20 px-4 py-3 text-sm font-mono-tech text-canopy"
+                    className="w-full rounded-xl bg-surface-raised border border-line/20 px-4 py-3 text-sm font-label text-heading"
                   />
-                  <CreditCard className="w-4 h-4 text-bark-muted absolute right-4 top-3.5" />
+                  <CreditCard className="w-4 h-4 text-ink-muted absolute right-4 top-3.5" />
                 </div>
               </div>
 
@@ -314,7 +314,7 @@ function StripeTestCheckoutContent() {
                 <div>
                   <label
                     htmlFor="checkout-exp"
-                    className="block text-xs font-mono-tech uppercase text-bark-muted mb-1"
+                    className="block text-xs font-label uppercase text-ink-muted mb-1"
                   >
                     Expiration (MM / YY)
                   </label>
@@ -324,13 +324,13 @@ function StripeTestCheckoutContent() {
                     required
                     value={expiry}
                     onChange={(e) => setExpiry(e.target.value)}
-                    className="w-full rounded-xl bg-parchment-light border border-canopy/20 px-4 py-3 text-sm font-mono-tech text-canopy"
+                    className="w-full rounded-xl bg-surface-raised border border-line/20 px-4 py-3 text-sm font-label text-heading"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="checkout-cvc"
-                    className="block text-xs font-mono-tech uppercase text-bark-muted mb-1"
+                    className="block text-xs font-label uppercase text-ink-muted mb-1"
                   >
                     CVC
                   </label>
@@ -340,7 +340,7 @@ function StripeTestCheckoutContent() {
                     required
                     value={cvc}
                     onChange={(e) => setCvc(e.target.value)}
-                    className="w-full rounded-xl bg-parchment-light border border-canopy/20 px-4 py-3 text-sm font-mono-tech text-canopy"
+                    className="w-full rounded-xl bg-surface-raised border border-line/20 px-4 py-3 text-sm font-label text-heading"
                   />
                 </div>
               </div>
@@ -348,7 +348,7 @@ function StripeTestCheckoutContent() {
               <div>
                 <label
                   htmlFor="checkout-holder"
-                  className="block text-xs font-mono-tech uppercase text-bark-muted mb-1"
+                  className="block text-xs font-label uppercase text-ink-muted mb-1"
                 >
                   Cardholder Name
                 </label>
@@ -358,12 +358,12 @@ function StripeTestCheckoutContent() {
                   required
                   value={nameOnCard}
                   onChange={(e) => setNameOnCard(e.target.value)}
-                  className="w-full rounded-xl bg-parchment-light border border-canopy/20 px-4 py-3 text-sm text-canopy"
+                  className="w-full rounded-xl bg-surface-raised border border-line/20 px-4 py-3 text-sm text-heading"
                 />
               </div>
 
               {declineError && (
-                <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
+                <div className="p-3.5 rounded-xl bg-neg-soft border border-neg/35 text-xs text-neg flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{declineError}</span>
                 </div>
@@ -393,16 +393,16 @@ function StripeTestCheckoutContent() {
                   onClick={() =>
                     router.push(`/booking/cancel?ref=${encodeURIComponent(bookingRef)}`)
                   }
-                  className="w-full py-3 rounded-xl border border-canopy/15 hover:bg-parchment text-xs font-mono-tech text-bark-muted transition-colors"
+                  className="w-full py-3 rounded-xl border border-line/15 hover:bg-surface text-xs font-label text-ink-muted transition-colors"
                 >
                   Cancel &amp; Return to Jabali Trails Booking
                 </button>
               </div>
 
-              <div className="pt-2 flex items-center justify-center gap-2 text-[11px] text-bark-muted">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+              <div className="pt-2 flex items-center justify-center gap-2 text-[11px] text-ink-muted">
+                <CheckCircle2 className="w-3.5 h-3.5 text-pos" />
                 <span>
-                  Triggers <code className="font-mono-tech">checkout.session.completed</code> webhook upon authorization
+                  Triggers <code className="font-label">checkout.session.completed</code> webhook upon authorization
                 </span>
               </div>
             </form>
@@ -417,7 +417,7 @@ export default function StripeCheckoutPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-parchment text-canopy">
+        <div className="min-h-screen flex items-center justify-center bg-surface text-heading">
           <Loader2 className="w-6 h-6 animate-spin mr-2" />
           <span>Loading Stripe Checkout...</span>
         </div>

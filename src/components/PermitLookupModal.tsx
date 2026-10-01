@@ -104,23 +104,23 @@ export default function PermitLookupModal({ onClose }: PermitLookupModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-[65] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto">
       <div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="permit-lookup-title"
-        className="bg-parchment-light rounded-2xl border border-canopy/20 max-w-lg w-full shadow-elevated overflow-hidden my-8"
+        className="bg-surface-raised rounded-2xl border border-line/20 max-w-lg w-full shadow-elevated overflow-hidden my-8"
       >
         <div className="bg-canopy text-parchment px-6 py-5 flex items-center justify-between">
           <div>
-            <span className="font-mono-tech text-[11px] uppercase tracking-wider text-acacia flex items-center gap-1.5">
+            <span className="font-label text-[11px] uppercase tracking-wider text-acacia flex items-center gap-1.5">
               <FileCheck2 className="w-3.5 h-3.5" />
               UWA Permit &amp; Expedition Dossier Lookup
             </span>
             <h3
               id="permit-lookup-title"
-              className="font-serif text-xl font-semibold text-white mt-0.5"
+              className="font-display text-xl font-semibold text-white mt-0.5"
             >
               Track Your Safari Reservation
             </h3>
@@ -153,9 +153,9 @@ export default function PermitLookupModal({ onClose }: PermitLookupModalProps) {
                   setLookupResult(null);
                   setLookupMessage(null);
                 }}
-                className="w-full rounded-xl bg-white border border-canopy/20 pl-9 pr-3.5 py-2.5 text-sm font-mono-tech text-canopy"
+                className="w-full rounded-xl bg-field border border-field-line pl-9 pr-3.5 py-2.5 text-sm font-label text-heading"
               />
-              <Search className="w-4 h-4 text-bark-muted absolute left-3 top-3" aria-hidden="true" />
+              <Search className="w-4 h-4 text-ink-muted absolute left-3 top-3" aria-hidden="true" />
             </div>
             <button
               type="submit"
@@ -167,26 +167,26 @@ export default function PermitLookupModal({ onClose }: PermitLookupModalProps) {
           </form>
 
           {lookupMessage && (
-            <p role="alert" className="rounded-xl bg-parchment border border-canopy/15 p-4 text-sm text-bark">
+            <p role="alert" className="rounded-xl bg-surface border border-line/15 p-4 text-sm text-ink">
               {lookupMessage}
             </p>
           )}
 
           {lookupResult && (
-            <div className="p-4 rounded-xl bg-parchment border border-canopy/15 space-y-3">
+            <div className="p-4 rounded-xl bg-surface border border-line/15 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="font-mono-tech text-xs font-bold text-canopy">
+                <span className="font-label text-xs font-bold text-heading">
                   {lookupResult.bookingReference}
                 </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-mono-tech bg-emerald-100 text-emerald-900 font-semibold">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-label bg-pos-soft text-pos font-semibold">
                   <CheckCircle2 className="w-3 h-3" />
                   {lookupResult.status.toUpperCase()}
                 </span>
               </div>
-              <div className="font-serif font-semibold text-base text-canopy">
+              <div className="font-display font-semibold text-base text-heading">
                 {lookupResult.expeditionTitle}
               </div>
-              <div className="text-xs text-bark-muted font-mono-tech">
+              <div className="text-xs text-ink-muted font-label">
                 Departure: {lookupResult.departureDate} · {lookupResult.guests} Guest(s) ·{' '}
                 {lookupResult.leadGuest.fullName}
               </div>
@@ -206,26 +206,26 @@ export default function PermitLookupModal({ onClose }: PermitLookupModalProps) {
           )}
 
           {recentBookings.length > 0 && (
-            <div className="space-y-2.5 pt-2 border-t border-canopy/10">
-              <div className="text-xs font-mono-tech uppercase text-bark-muted">
+            <div className="space-y-2.5 pt-2 border-t border-line/10">
+              <div className="text-xs font-label uppercase text-ink-muted">
                 Recent Session Bookings ({recentBookings.length})
               </div>
               <div className="space-y-2 max-h-56 overflow-y-auto">
                 {recentBookings.map((b) => (
                   <div
                     key={b.id}
-                    className="p-3 rounded-xl bg-white border border-canopy/12 flex items-center justify-between gap-3"
+                    className="p-3 rounded-xl bg-field border border-line/12 flex items-center justify-between gap-3"
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono-tech text-xs font-bold text-canopy">
+                        <span className="font-label text-xs font-bold text-heading">
                           {b.bookingReference}
                         </span>
-                        <span className="text-[10px] font-mono-tech px-2 py-0.5 rounded bg-parchment-dark text-canopy">
+                        <span className="text-[10px] font-label px-2 py-0.5 rounded bg-surface-sunk text-heading">
                           {b.status === 'paid' ? 'PAID' : b.status === 'inquiry_hold' ? '48H HOLD' : 'PENDING'}
                         </span>
                       </div>
-                      <div className="text-xs text-bark-muted truncate max-w-[230px]">
+                      <div className="text-xs text-ink-muted truncate max-w-[230px]">
                         {b.expeditionTitle} ({b.departureDate})
                       </div>
                     </div>
@@ -246,15 +246,15 @@ export default function PermitLookupModal({ onClose }: PermitLookupModalProps) {
             </div>
           )}
 
-          <div className="pt-2 border-t border-canopy/10 flex flex-wrap items-center justify-between gap-3 text-xs text-bark-muted">
+          <div className="pt-2 border-t border-line/10 flex flex-wrap items-center justify-between gap-3 text-xs text-ink-muted">
             <span className="flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-700" />
+              <ShieldCheck className="w-4 h-4 text-pos" />
               UWA E-Permit Sync Active
             </span>
             <Link
               href="/admin"
               onClick={onClose}
-              className="font-mono-tech text-terracotta hover:underline flex items-center gap-1"
+              className="font-label text-terracotta hover:underline flex items-center gap-1"
             >
               <Clock className="w-3.5 h-3.5" />
               <span>Open Admin Operations Console</span>
