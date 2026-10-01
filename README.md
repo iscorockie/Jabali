@@ -207,7 +207,7 @@ Copy the resulting `whsec_...` signing secret into `STRIPE_WEBHOOK_SECRET` in `.
 
 ---
 
-## Deploying to Vercel or GitHub Pages / Cloudflare Pages
+## Deploying to Vercel, GitHub Pages or Cloudflare Pages
 
 ### Option A: Continuous verification (GitHub Actions)
 
@@ -215,7 +215,18 @@ Copy the resulting `whsec_...` signing secret into `STRIPE_WEBHOOK_SECRET` in `.
 
 The site is **not** a static export: the Stripe checkout, payment-intent, webhook, availability and inquiry endpoints are Node route handlers, and every route is intentionally rendered dynamically (`ƒ`) against the live permit store. Deploy it to a Node-capable host (Vercel, Fly.io, Render, a container, or any Node 18+ server) with the environment variables configured. `src/lib/client-booking-engine.ts` keeps the booking flow working (with a local quota engine and localStorage persistence) if the API routes are ever unreachable.
 
-### Option B: Deploy to Vercel (Full Serverless + Stripe Webhooks)
+### Option B: GitHub Pages static demo (`index.html`)
+
+<https://iscorockie.github.io/Jabali/> is served by legacy GitHub Pages straight from the root `index.html` on `main` (no build, no workflow). It is a single self-contained file that mirrors the production app so the demo never drifts from the design system:
+
+- **Same design system** — Sen + Sora typography, the semantic RGB design tokens from `src/app/globals.css`, Daylight / Night Field themes with the same pre-paint boot script and `jabali_theme` key, reveal animations, reduced-motion and print styles.
+- **Same interaction layer** — ⌘K command palette (same fuzzy `score()` ranking), saved shortlist (`jabali_wishlist_v1`), compare tray (`jabali_compare_v1`, max 3, diff-only view), USD / EUR / GBP / UGX currency switcher (`jabali_currency_v1`), catalogue filters / sort / grid-list, interactive SVG corridor map, destination and expedition dossiers, testimonial carousel, FAQ accordion, toasts.
+- **Same booking engine** — the FNV-1a quota engine from `src/lib/client-booking-engine.ts` and the pricing rules from `src/lib/pricing.ts` are ported line-for-line (verified in parity tests across 2,500+ dates), so the live permit calendar, 12-month season heatmap, residency / tier / style / plan quote ledger and 48-hour holds (`jabali_trails_bookings_v1`) behave exactly like the app. The ops-desk mini console uses the same demo passcode (`jabali2026`) and exports a CSV docket.
+- **Static-host constraints** — Stripe Checkout, webhooks and permit issuance are server features and stay on the Node deployment; the demo explains this inline. All asset paths are relative (`public/images/...`) so the page works under the `/Jabali/` sub-path.
+
+When you change tokens, copy or data in the app, mirror the change in `index.html` (data lives in one block at the top of its script).
+
+### Option C: Deploy to Vercel (Full Serverless + Stripe Webhooks)
 
 1. Push this repository to GitHub.
 2. Import the repository in [Vercel](https://vercel.com/new).

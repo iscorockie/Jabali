@@ -6,6 +6,7 @@ on:
       - main
       - arena/01a0f714-jabali
       - arena/01a0f781-jabali
+      - arena/01a0f7d2-jabali
   pull_request:
     branches:
       - main
