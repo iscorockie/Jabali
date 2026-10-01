@@ -27,6 +27,7 @@ function StripeTestCheckoutContent() {
 
   const [booking, setBooking] = useState<BookingRecord | null>(null);
   const [loading, setLoading] = useState(true);
+  const [bookingError, setBookingError] = useState<string | null>(null);
   const [cardNumber, setCardNumber] = useState('4242 4242 4242 4242');
   const [expiry, setExpiry] = useState('12 / 28');
   const [cvc, setCvc] = useState('424');
@@ -35,16 +36,33 @@ function StripeTestCheckoutContent() {
   const [declineError, setDeclineError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchBookingUniversal({ ref, sessionId })
+    let active = true;
+    setLoading(true);
+    setBooking(null);
+    setBookingError(null);
+
+    fetchBookingUniversal({
+      ref,
+      sessionId,
+      allowDemoFallback: !ref && sessionId === 'cs_test_jabali_demo',
+    })
       .then((found) => {
-        if (found) {
-          setBooking(found);
-          if (found.leadGuest?.fullName) {
-            setNameOnCard(found.leadGuest.fullName.toUpperCase());
-          }
+        if (!active) return;
+        setBooking(found);
+        if (found?.leadGuest?.fullName) {
+          setNameOnCard(found.leadGuest.fullName.toUpperCase());
         }
       })
-      .finally(() => setLoading(false));
+      .catch(() => {
+        if (active) setBookingError('Unable to load your booking. Please try again.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, [ref, sessionId]);
 
   const handleAuthorizePayment = async (e: React.FormEvent) => {
@@ -91,7 +109,30 @@ function StripeTestCheckoutContent() {
     );
   }
 
-  const payableUsd = booking?.pricing?.payableNowUsd || 4250;
+  if (!booking) {
+    return (
+      <div className="min-h-screen bg-parchment py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-lg mx-auto rounded-2xl bg-parchment-light border border-canopy/15 p-8 text-center space-y-4">
+          <AlertCircle className="w-10 h-10 text-terracotta mx-auto" aria-hidden="true" />
+          <h1 className="font-serif text-2xl font-semibold text-canopy">
+            {bookingError ? 'Unable to Load Booking' : 'Booking Not Found'}
+          </h1>
+          <p role="alert" className="text-sm text-bark-muted">
+            {bookingError || 'We could not find this checkout session. Check your booking reference or start a new reservation.'}
+          </p>
+          <Link
+            href="/booking"
+            className="inline-flex items-center gap-2 rounded-xl bg-canopy text-parchment px-5 py-3 text-sm font-semibold"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Return to Plan &amp; Book
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const payableUsd = booking.pricing.payableNowUsd;
   const bookingRef = booking?.bookingReference || ref || 'JBL-2026-DEMO';
 
   return (

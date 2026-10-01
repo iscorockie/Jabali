@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js/pure';
 import {
   Elements,
   PaymentElement,

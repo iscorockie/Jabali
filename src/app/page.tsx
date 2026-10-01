@@ -5,6 +5,7 @@ import { listBookings, getMonthAvailability } from '@/lib/booking-store';
 import { withBasePath } from '@/lib/base-path';
 import ExpeditionCard from '@/components/ExpeditionCard';
 import HeroQuickBookingBar from '@/components/HeroQuickBookingBar';
+import HeroPermitLookupButton from '@/components/HeroPermitLookupButton';
 import InteractiveUgandaMap from '@/components/InteractiveUgandaMap';
 import {
   Compass,
@@ -87,6 +88,12 @@ export default function HomePage() {
               >
                 <span>Explore 2026/2027 Expeditions</span>
               </Link>
+            </div>
+
+            {/* Existing Booking / Permit Lookup */}
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-sm text-parchment/75">Already booked?</span>
+              <HeroPermitLookupButton />
             </div>
           </div>
 
