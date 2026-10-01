@@ -4,6 +4,8 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { EXPEDITIONS, LEAD_GUIDES } from '@/data/expeditions';
 import { submitInquiryUniversal } from '@/lib/client-booking-engine';
+import { withBasePath } from '@/lib/base-path';
+import Reveal from '@/components/ui/Reveal';
 import {
   Compass,
   HeartHandshake,
@@ -132,28 +134,45 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-surface">
       {/* Hero */}
-      <section className="relative bg-canopy text-parchment py-16 sm:py-24 overflow-hidden">
-        <div className="absolute inset-0 opacity-30">
+      <section className="relative isolate overflow-hidden bg-canopy text-parchment grain">
+        <div className="absolute inset-0 opacity-35">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/bwindi-gorilla-closeup.jpg"
+            src={withBasePath('/images/bwindi-gorilla-closeup.jpg')}
             alt="Mountain gorilla in Bwindi Impenetrable Forest"
-            className="w-full h-full object-cover"
+            className="anim-ken h-full w-full object-cover"
+            decoding="async"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-canopy via-canopy/85 to-canopy/65" />
+          <div className="absolute inset-0 bg-gradient-to-r from-canopy via-canopy/90 to-canopy/60" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="wrap relative z-10 py-16 sm:py-24">
           <div className="max-w-3xl space-y-5">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-acacia/20 border border-acacia/40 text-acacia font-label text-xs">
-              <Compass className="w-3.5 h-3.5" />
-              FOUNDED IN BUHOMA &amp; KAMPALA · EAST AFRICAN OWNED
+            <span className="chip chip-onPanel !border-acacia/40 !bg-acacia/15 !text-acacia">
+              <Compass className="h-3.5 w-3.5" />
+              Founded in Buhoma &amp; Kampala · East African owned
             </span>
-            <h1 className="font-display text-4xl sm:text-6xl font-semibold tracking-tight leading-tight">
-              Rooted in the Forest. Built by the Trackers Who Walk It.
+            <h1 className="text-hero font-display font-semibold text-parchment">
+              Rooted in the forest. Built by the trackers who walk it.
             </h1>
-            <p className="text-parchment/85 text-base sm:text-lg leading-relaxed">
-              Jabali—Swahili for &ldquo;strong as a rock&rdquo;—was founded by veteran Ugandan primatologists, ornithologists, and conservation logisticians with a singular conviction: East Africa’s most extraordinary wildlife encounters belong in small, unhurried groups led by local experts.
+            <p className="max-w-2xl text-base leading-relaxed text-parchment/85 sm:text-lg">
+              Jabali — Swahili for &ldquo;strong as a rock&rdquo; — was founded by veteran Ugandan
+              primatologists, ornithologists and conservation logisticians with a singular
+              conviction: East Africa’s most extraordinary wildlife encounters belong in small,
+              unhurried groups led by local experts.
             </p>
+            <div className="grid max-w-lg grid-cols-3 gap-4 border-t border-white/15 pt-5">
+              {[
+                { value: '2015', label: 'Founded in Buhoma' },
+                { value: '612', label: 'Expeditions guided' },
+                { value: '33 yrs', label: 'Combined field time' },
+              ].map((item) => (
+                <div key={item.label}>
+                  <div className="font-display text-2xl font-semibold text-acacia">{item.value}</div>
+                  <div className="mt-0.5 font-label text-parchment/60">{item.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

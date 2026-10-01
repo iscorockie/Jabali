@@ -1,10 +1,11 @@
-name: Build & Verify Full Next.js App & Stripe API
+name: Build, Lint & Typecheck Next.js App + Stripe API
 
 on:
   push:
     branches:
       - main
       - arena/01a0f714-jabali
+      - arena/01a0f781-jabali
   pull_request:
     branches:
       - main
@@ -25,6 +26,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
 
       - name: Build Full Next.js Application (Pages + Dynamic Stripe APIs)
         run: npm run build

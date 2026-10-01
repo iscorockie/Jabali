@@ -8,12 +8,46 @@ Production-ready marketing and real-time booking platform for **Jabali Trails Af
 
 - **Framework:** [Next.js 14 (App Router)](https://nextjs.org/) + React 18
 - **Language:** TypeScript (`strict` mode)
-- **Styling:** Tailwind CSS with a custom **Equatorial Field Journal & Botanical Luxury** design system (`parchment`, `canopy`, `terracotta`, `acacia`, `bark`)
+- **Styling:** Tailwind CSS with the **Equatorial Field Journal** design system — semantic RGB-channel CSS variables (`surface`, `heading`, `ink`, `panel`, `accent`, `gold`, `pos`) so a single class set renders both Daylight and Night Field modes
+- **Typography:** **Sora** for display/headings and interface labels, **Sen** for body copy (loaded from Google Fonts with `display=swap` and `preconnect`)
 - **Payments:** Official Stripe libraries (`stripe` on Node.js server routes, `@stripe/stripe-js` and `@stripe/react-stripe-js` on the client) supporting **both**:
   1. **Stripe Hosted Checkout** (`POST /api/checkout`)
   2. **Stripe Embedded Payment Element** (`POST /api/create-payment-intent`)
   3. **48-Hour Complimentary Permit Inquiry Hold** (`POST /api/checkout` / `POST /api/inquiries`)
 - **Icons:** `lucide-react`
+
+---
+
+## Interface, Motion & Guest Experience
+
+The front end was rebuilt on a two-font, dual-theme design system with a full interaction layer.
+Everything below is live in this repository (no placeholder screens):
+
+**Global shell**
+- ⌘K / Ctrl-K **command palette** searching all six expeditions, six destinations, the guide roster, every page and direct actions (switch theme, switch currency, open the permit calendar, jump to your shortlist)
+- **Daylight / Night Field mode** driven by CSS variables, applied pre-paint (no flash) and persisted per device
+- **Currency switcher** (USD · EUR · GBP · UGX) shared by the navbar, catalogue, booking rail and ops console
+- **Saved shortlist** (localStorage) with navbar badge, `/expeditions?view=saved` filtered view and toast confirmations
+- **Compare tray** (up to three itineraries) with a difference-only comparison modal
+- Reading-progress rule, sticky shrinking header, back-to-top control, skip-to-content link, accessible dialogs (focus trap, ESC, scroll lock), `prefers-reduced-motion` and high-contrast support, field-grain + topographic textures, scroll-reveal primitives and count-up statistics
+- `sitemap.xml`, `robots.txt`, web-app manifest, favicon, per-route metadata, OpenGraph/Twitter cards, branded 404 + error boundary + route loading skeleton
+
+**Catalogue & dossiers**
+- URL-synced filters (category, duration, difficulty, budget slider, permits-included, free-text), five sort modes, grid/list layouts, saved-only view and CSV-ready compare tray
+- Expedition dossiers with a scrollspy section rail, day-by-day expandable itinerary, **full-screen gallery lightbox** (keyboard, swipe, zoom, thumbnails), **12-month permit & price heatmap** that deep-links into the calendar, permit FAQ and related-trip rail
+- Live UWA permit telemetry chips on every card and dossier, backed by `/api/availability`
+
+**Booking engine**
+- Three-step configurator with a sticky progress rail, completion ticks and per-step jump links
+- Real-time permit calendar, tier/add-on configurator, **inline field validation** that paints and clears its own error notes, and a scroll-to-first-problem summary
+- **Travelling-party manifest** — every permit holder is captured with passport, nationality, date of birth and notes, persisted through Stripe checkout, the Stripe Payment Element and the local fallback engine
+- **Autosaved draft** (restore banner + start-fresh) and a **persisted packing checklist** with progress bar and downloadable `.txt` copy
+- Confirmation dossier with countdown, permit roster, **calendar invite (.ics) export**, copy-reference, print styles and reschedule/cancel actions
+
+**Contact, about & ops console**
+- Inquiry builder with validation, draft autosave, downloadable brief and a live indicative quote matched to the closest catalogue itinerary
+- Conservation-ledger calculator, guide roster with ask-a-guide form, Bwindi/Kibale UWA permit guide and packing checklist anchors
+- Ops console behind a demo passcode gate (`jabali2026`): KPI counters, revenue-by-expedition chart, ledger search/status filters, CSV export, expandable booking dossiers (party manifest, itemised ledger, Stripe IDs), UWA quota overrides, webhook ledger and inquiry pipeline
 
 ---
 
@@ -51,6 +85,19 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+Other useful scripts:
+
+```bash
+npm run lint        # ESLint (next/core-web-vitals)
+npm run typecheck   # tsc --noEmit
+npm run build       # production build + type/lint gate
+npm start           # serve the production build on 0.0.0.0:3000
+```
+
+### 4. Operations Console
+
+`/admin` is protected by a client-side demo gate. The passcode is **`jabali2026`** and the unlock is remembered for the browser session. Replace the gate with SSO or a signed server session before running this in production.
 
 ---
 
@@ -104,7 +151,8 @@ Copy the resulting `whsec_...` signing secret into `STRIPE_WEBHOOK_SECRET` in `.
 
 ```text
 ├── public/
-│   └── images/                        # High-resolution Uganda & East Africa wildlife/landscape photos
+│   ├── images/                        # High-resolution Uganda & East Africa wildlife/landscape photos
+│   └── manifest.webmanifest           # Installable web-app manifest + shortcuts
 ├── src/
 │   ├── app/
 │   │   ├── api/
@@ -125,10 +173,25 @@ Copy the resulting `whsec_...` signing secret into `STRIPE_WEBHOOK_SECRET` in `.
 │   │   ├── expeditions/
 │   │   │   ├── page.tsx               # Filterable expedition catalog
 │   │   │   └── [slug]/page.tsx        # Day-by-day expedition field dossier
+│   │   ├── error.tsx                  # Branded error boundary with incident reference
+│   │   ├── loading.tsx                # Route-transition skeleton
+│   │   ├── not-found.tsx              # 404 with search + suggested itineraries
+│   │   ├── robots.ts / sitemap.ts     # SEO surfaces generated from the catalogue
 │   │   └── page.tsx                   # Home page with quick-booking bar, featured treks & reviews
 │   ├── components/
-│   │   ├── Navbar.tsx                 # Sticky field header with live permit status indicator
-│   │   ├── Footer.tsx                 # Conservation pledge, UTB/AUTO credentials & links
+│   │   ├── providers/SiteProvider.tsx # Theme, currency, shortlist, compare tray, toasts, ⌘K state
+│   │   ├── ui/                        # Reveal, Modal, Accordion, Lightbox, Stat, Skeleton, Toaster
+│   │   ├── CommandPalette.tsx         # ⌘K search across expeditions, parks, guides & actions
+│   │   ├── DossierNav.tsx             # Scrollspy section rail for long-form pages
+│   │   ├── BookingProgressRail.tsx    # Step rail + completion telemetry on /booking
+│   │   ├── SeasonQuotaChart.tsx       # 12-month permit & price heatmap
+│   │   ├── ExpeditionGallery.tsx      # Lightbox field gallery
+│   │   ├── LivePermitChip.tsx         # Live UWA quota chip for cards & dossiers
+│   │   ├── WishlistButton.tsx         # Saved-shortlist toggle
+│   │   ├── FaqAccordion.tsx           # Filterable permit/payment FAQ
+│   │   ├── TestimonialCarousel.tsx    # Auto-rotating verified guest dispatches
+│   │   ├── Navbar.tsx                 # Sticky field header with search, theme, currency, shortlist
+│   │   ├── Footer.tsx                 # Conservation pledge, validated newsletter, UTB/AUTO credentials
 │   │   ├── ExpeditionCard.tsx         # Telemetry-rich expedition card
 │   │   ├── HeroQuickBookingBar.tsx    # Interactive hero departure & permit finder
 │   │   └── StripeEmbeddedPaymentModal.tsx # Embedded @stripe/react-stripe-js Payment Element modal
@@ -136,6 +199,8 @@ Copy the resulting `whsec_...` signing secret into `STRIPE_WEBHOOK_SECRET` in `.
 │   │   └── expeditions.ts             # Expeditions, destinations, guides & add-ons catalog
 │   └── lib/
 │       ├── booking-store.ts           # Dynamic pricing, UWA permit quota engine & booking persistence
+│       ├── format.ts                  # Date/price formatting, ICS invites, CSV export, clipboard
+│       ├── pricing.ts                 # Pricing engine + BookingRecord/TravelerCompanion types
 │       └── stripe.ts                  # Stripe server SDK initialization & product mapping
 └── .env.example                       # Environment variables template
 ```
@@ -144,20 +209,11 @@ Copy the resulting `whsec_...` signing secret into `STRIPE_WEBHOOK_SECRET` in `.
 
 ## Deploying to Vercel or GitHub Pages / Cloudflare Pages
 
-### Option A: Deploy to GitHub Pages (Automatic via GitHub Actions)
+### Option A: Continuous verification (GitHub Actions)
 
-This repository includes a pre-configured GitHub Pages workflow at `.github/workflows/deploy-pages.yml` and a universal client+server booking engine (`src/lib/client-booking-engine.ts`) that works seamlessly on static hosts:
+`.github/workflows/deploy-pages.yml` runs on every push to `main` and the Arena session branches. It installs dependencies, then executes `npm run lint`, `npm run typecheck` and `npm run build` — so lint, TypeScript and the production build are verified before anything ships.
 
-1. In your GitHub repository, go to **Settings → Pages**.
-2. Under **Build and deployment → Source**, select **GitHub Actions**.
-3. Push to `main` (or `arena/01a0f714-jabali`) or trigger **Deploy Jabali Trails Africa to GitHub Pages** from the **Actions** tab.
-4. The workflow automatically configures `NEXT_PUBLIC_BASE_PATH` (e.g. `/Jabali`), runs `npm run build:pages` to generate `./out` with `.nojekyll`, and publishes the static site.
-
-To build the static Pages export locally (`./out`):
-
-```bash
-npm run build:pages
-```
+The site is **not** a static export: the Stripe checkout, payment-intent, webhook, availability and inquiry endpoints are Node route handlers, and every route is intentionally rendered dynamically (`ƒ`) against the live permit store. Deploy it to a Node-capable host (Vercel, Fly.io, Render, a container, or any Node 18+ server) with the environment variables configured. `src/lib/client-booking-engine.ts` keeps the booking flow working (with a local quota engine and localStorage persistence) if the API routes are ever unreachable.
 
 ### Option B: Deploy to Vercel (Full Serverless + Stripe Webhooks)
 
