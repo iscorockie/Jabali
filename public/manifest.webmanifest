@@ -1,0 +1,37 @@
+{
+  "name": "Jabali Trails Africa — Guided Expeditions",
+  "short_name": "Jabali Trails",
+  "description": "Small-group and private guided expeditions in Uganda & East Africa with live UWA gorilla & chimpanzee permit booking.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F6F3EC",
+  "theme_color": "#112218",
+  "categories": ["travel", "shopping"],
+  "icons": [
+    {
+      "src": "/images/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Check permits & book",
+      "url": "/booking",
+      "description": "Live UWA permit calendar and Stripe checkout"
+    },
+    {
+      "name": "Expedition catalogue",
+      "url": "/expeditions",
+      "description": "Filter, sort and compare guided itineraries"
+    },
+    {
+      "name": "Custom safari inquiry",
+      "url": "/contact",
+      "description": "Build a tailor-made private expedition"
+    }
+  ]
+}

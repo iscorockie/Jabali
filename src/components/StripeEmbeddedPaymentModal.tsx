@@ -79,7 +79,7 @@ function LiveStripeElementsForm({
     <form onSubmit={handleSubmit} className="space-y-5">
       <PaymentElement />
       {errorMessage && (
-        <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
+        <div className="p-3 rounded-lg bg-neg-soft border border-neg/35 text-xs text-neg flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{errorMessage}</span>
         </div>
@@ -164,15 +164,15 @@ export default function StripeEmbeddedPaymentModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-parchment-light rounded-2xl border border-canopy/20 max-w-lg w-full shadow-elevated overflow-hidden my-8">
+      <div className="bg-surface-raised rounded-2xl border border-line/20 max-w-lg w-full shadow-elevated overflow-hidden my-8">
         {/* Header */}
         <div className="bg-canopy text-parchment px-6 py-5 flex items-center justify-between">
           <div>
-            <div className="flex items-center gap-2 text-xs font-mono-tech text-acacia">
+            <div className="flex items-center gap-2 text-xs font-label text-acacia">
               <Lock className="w-3.5 h-3.5" />
               <span>STRIPE PAYMENT ELEMENT · REF {bookingReference}</span>
             </div>
-            <h3 className="font-serif text-xl font-semibold text-white mt-1">
+            <h3 className="font-display text-xl font-semibold text-white mt-1">
               Complete Expedition Payment
             </h3>
           </div>
@@ -188,18 +188,18 @@ export default function StripeEmbeddedPaymentModal({
 
         <div className="p-6 space-y-5">
           {/* Summary Box */}
-          <div className="p-4 rounded-xl bg-parchment border border-canopy/12 flex items-center justify-between gap-3">
+          <div className="p-4 rounded-xl bg-surface border border-line/12 flex items-center justify-between gap-3">
             <div>
-              <div className="text-xs text-bark-muted">{expeditionTitle}</div>
-              <div className="text-xs font-mono-tech text-bark-subtle mt-0.5">
+              <div className="text-xs text-ink-muted">{expeditionTitle}</div>
+              <div className="text-xs font-label text-ink-subtle mt-0.5">
                 Receipt to: {leadGuestEmail}
               </div>
             </div>
             <div className="text-right">
-              <span className="block text-[10px] font-mono-tech uppercase text-bark-muted">
+              <span className="block text-[10px] font-label uppercase text-ink-muted">
                 Total Due Now
               </span>
-              <span className="font-mono-tech text-xl font-bold text-canopy">
+              <span className="font-label text-xl font-bold text-heading">
                 ${payableNowUsd.toLocaleString()}
               </span>
             </div>
@@ -228,18 +228,18 @@ export default function StripeEmbeddedPaymentModal({
             </Elements>
           ) : (
             <form onSubmit={handleSandboxConfirm} className="space-y-4">
-              <div className="p-3 rounded-lg bg-acacia-light border border-acacia/40 text-xs text-canopy flex items-start gap-2">
+              <div className="p-3 rounded-lg bg-acacia-light border border-acacia/40 text-xs text-heading flex items-start gap-2">
                 <ShieldCheck className="w-4 h-4 text-terracotta shrink-0 mt-0.5" />
                 <div>
                   <strong>Stripe Test Mode Active:</strong> Pre-filled with official Stripe test card{' '}
-                  <code className="font-mono-tech font-semibold">4242 4242 4242 4242</code>. Add your{' '}
-                  <code className="font-mono-tech">NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY</code> in{' '}
-                  <code className="font-mono-tech">.env.local</code> to mount live Stripe servers.
+                  <code className="font-label font-semibold">4242 4242 4242 4242</code>. Add your{' '}
+                  <code className="font-label">NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY</code> in{' '}
+                  <code className="font-label">.env.local</code> to mount live Stripe servers.
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                   Card Number (Stripe Test Card)
                 </label>
                 <div className="relative">
@@ -247,23 +247,23 @@ export default function StripeEmbeddedPaymentModal({
                     type="text"
                     value={cardNumber}
                     onChange={(e) => setCardNumber(e.target.value)}
-                    className="w-full rounded-xl bg-white border border-canopy/20 px-3.5 py-2.5 text-sm font-mono-tech text-canopy"
+                    className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-sm font-label text-heading"
                     required
                   />
-                  <CreditCard className="w-4 h-4 text-bark-muted absolute right-3.5 top-3" />
+                  <CreditCard className="w-4 h-4 text-ink-muted absolute right-3.5 top-3" />
                 </div>
                 <div className="flex gap-2 mt-1.5">
                   <button
                     type="button"
                     onClick={() => setCardNumber('4242 4242 4242 4242')}
-                    className="text-[11px] font-mono-tech px-2 py-0.5 rounded bg-emerald-100 text-emerald-900"
+                    className="text-[11px] font-label px-2 py-0.5 rounded bg-pos-soft text-pos"
                   >
                     Use 4242 (Success)
                   </button>
                   <button
                     type="button"
                     onClick={() => setCardNumber('4000 0000 0000 0002')}
-                    className="text-[11px] font-mono-tech px-2 py-0.5 rounded bg-red-100 text-red-900"
+                    className="text-[11px] font-label px-2 py-0.5 rounded bg-neg-soft text-neg"
                   >
                     Use 0002 (Decline Test)
                   </button>
@@ -272,46 +272,46 @@ export default function StripeEmbeddedPaymentModal({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                  <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                     Expiration
                   </label>
                   <input
                     type="text"
                     value={expiry}
                     onChange={(e) => setExpiry(e.target.value)}
-                    className="w-full rounded-xl bg-white border border-canopy/20 px-3.5 py-2.5 text-sm font-mono-tech text-canopy"
+                    className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-sm font-label text-heading"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                  <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                     CVC
                   </label>
                   <input
                     type="text"
                     value={cvc}
                     onChange={(e) => setCvc(e.target.value)}
-                    className="w-full rounded-xl bg-white border border-canopy/20 px-3.5 py-2.5 text-sm font-mono-tech text-canopy"
+                    className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-sm font-label text-heading"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-mono-tech uppercase text-bark-muted mb-1">
+                <label className="block text-xs font-label uppercase text-ink-muted mb-1">
                   Name on Card
                 </label>
                 <input
                   type="text"
                   value={cardholder}
                   onChange={(e) => setCardholder(e.target.value)}
-                  className="w-full rounded-xl bg-white border border-canopy/20 px-3.5 py-2.5 text-sm text-canopy"
+                  className="w-full rounded-xl bg-field border border-line/20 px-3.5 py-2.5 text-sm text-heading"
                   required
                 />
               </div>
 
               {errorMsg && (
-                <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
+                <div className="p-3 rounded-lg bg-neg-soft border border-neg/35 text-xs text-neg flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{errorMsg}</span>
                 </div>
@@ -340,7 +340,7 @@ export default function StripeEmbeddedPaymentModal({
                   onClick={() =>
                     router.push(`/booking/cancel?ref=${encodeURIComponent(bookingReference)}`)
                   }
-                  className="w-full py-2.5 text-xs font-mono-tech text-bark-muted hover:text-canopy"
+                  className="w-full py-2.5 text-xs font-label text-ink-muted hover:text-heading"
                 >
                   Simulate Cancel / Return to Booking
                 </button>

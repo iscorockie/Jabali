@@ -1,6 +1,7 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-import { Expedition } from '@/data/expeditions';
 import {
   Calendar,
   Users,
@@ -8,50 +9,76 @@ import {
   MapPin,
   ArrowRight,
   ShieldCheck,
-  Sparkles,
+  Scale,
+  Check,
+  Ticket,
 } from 'lucide-react';
+import { Expedition } from '@/data/expeditions';
+import { useSite } from '@/components/providers/SiteProvider';
+import { nightsFor } from '@/lib/format';
+import WishlistButton from '@/components/WishlistButton';
+import LivePermitChip from '@/components/LivePermitChip';
 
-interface ExpeditionCardProps {
+export default function ExpeditionCard({
+  expedition,
+  index = 0,
+}: {
   expedition: Expedition;
-  priority?: boolean;
-}
-
-export default function ExpeditionCard({ expedition }: ExpeditionCardProps) {
+  index?: number;
+}) {
+  const { money, compare, toggleCompare, pushToast } = useSite();
   const totalPermitUsd = expedition.gorillaPermitUsd + expedition.chimpPermitUsd;
+  const greenSeasonFrom = expedition.basePriceUsd - expedition.greenSeasonDiscountUsd;
+  const perDay = expedition.basePriceUsd / expedition.durationDays;
+  const inCompare = compare.includes(expedition.id);
+
+  const handleCompare = () => {
+    toggleCompare(expedition.id);
+    pushToast({
+      tone: inCompare ? 'info' : 'success',
+      title: inCompare ? 'Removed from comparison' : 'Added to comparison',
+      message: inCompare
+        ? `${expedition.title} is no longer in your side-by-side tray.`
+        : 'Open “Compare” under the catalogue filters for the side-by-side dossier.',
+    });
+  };
 
   return (
-    <article className="group bg-parchment-light rounded-2xl border border-canopy/12 overflow-hidden shadow-card hover:shadow-elevated transition-all duration-300 flex flex-col">
-      {/* Image Header */}
-      <div className="relative h-64 sm:h-72 overflow-hidden bg-canopy">
+    <article
+      className="card card-hover group relative flex h-full flex-col overflow-hidden"
+      style={{ animationDelay: `${Math.min(index, 6) * 45}ms` }}
+    >
+      {/* ── Media ───────────────────────────────────────────────────────── */}
+      <div className="media-frame h-56 sm:h-64">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={expedition.heroImage}
           alt={expedition.title}
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+          className="object-center"
           loading="lazy"
+          decoding="async"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-canopy/90 via-canopy/25 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-canopy/95 via-canopy/25 to-canopy/5" />
 
-        {/* Top Badges */}
-        <div className="absolute top-4 left-4 right-4 flex items-center justify-between gap-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-canopy/85 backdrop-blur-md text-parchment border border-white/15">
-            <Sparkles className="w-3 h-3 text-acacia" />
+        <div className="absolute inset-x-4 top-3.5 flex items-start justify-between gap-2">
+          <span className="chip chip-onPanel !border-white/20 !bg-black/40 !text-acacia backdrop-blur-md">
+            <Ticket className="h-3 w-3" />
             {expedition.badge}
           </span>
-          <span className="font-mono-tech text-[11px] px-2.5 py-1 rounded-md bg-black/55 backdrop-blur-md text-acacia border border-white/10">
-            {expedition.coordinates}
-          </span>
+          <div className="flex items-center gap-1.5">
+            <WishlistButton expeditionId={expedition.id} variant="icon" />
+          </div>
         </div>
 
-        {/* Bottom Overlay Location & Telemetry */}
-        <div className="absolute bottom-4 left-4 right-4 text-parchment">
-          <div className="flex items-center gap-1.5 text-xs text-acacia font-mono-tech uppercase tracking-wider">
-            <MapPin className="w-3.5 h-3.5 shrink-0" />
+        <div className="absolute inset-x-4 bottom-3.5 text-parchment">
+          <div className="flex items-center gap-1.5 font-label text-acacia">
+            <MapPin className="h-3 w-3 shrink-0" />
             <span className="truncate">{expedition.primaryPark}</span>
           </div>
-          <h3 className="font-serif text-xl sm:text-2xl font-semibold text-white mt-1 leading-snug">
+          <h3 className="mt-1 font-display text-[1.15rem] font-semibold leading-snug text-white sm:text-[1.3rem]">
             <Link
               href={`/expeditions/${expedition.slug}`}
-              className="hover:text-acacia transition-colors"
+              className="after:absolute after:inset-0 after:content-[''] hover:text-acacia"
             >
               {expedition.title}
             </Link>
@@ -59,83 +86,84 @@ export default function ExpeditionCard({ expedition }: ExpeditionCardProps) {
         </div>
       </div>
 
-      {/* Telemetry Spec Strip */}
-      <div className="grid grid-cols-3 divide-x divide-canopy/10 bg-parchment-dark/50 border-b border-canopy/10 text-xs">
-        <div className="px-3 py-2.5 flex items-center justify-center gap-1.5 text-bark">
-          <Calendar className="w-3.5 h-3.5 text-terracotta shrink-0" />
-          <span className="font-mono-tech font-medium">{expedition.durationDays} Days</span>
-        </div>
-        <div className="px-3 py-2.5 flex items-center justify-center gap-1.5 text-bark">
-          <Users className="w-3.5 h-3.5 text-canopy shrink-0" />
-          <span className="font-mono-tech font-medium">Max {expedition.maxGroupSize}</span>
-        </div>
-        <div className="px-3 py-2.5 flex items-center justify-center gap-1.5 text-bark">
-          <Mountain className="w-3.5 h-3.5 text-acacia-dark shrink-0" />
-          <span className="font-mono-tech font-medium truncate">{expedition.difficulty}</span>
-        </div>
+      {/* ── Spec strip ──────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-3 divide-x divide-line/10 border-y border-line/10 bg-surface-sunk/50">
+        {[
+          { Icon: Calendar, text: `${expedition.durationDays}D / ${nightsFor(expedition.durationDays)}N` },
+          { Icon: Users, text: `Max ${expedition.maxGroupSize} pax` },
+          { Icon: Mountain, text: expedition.difficulty },
+        ].map((spec) => (
+          <div
+            key={spec.text}
+            className="flex items-center justify-center gap-1.5 px-2 py-2.5 text-ink"
+            title={spec.text}
+          >
+            <spec.Icon className="h-3.5 w-3.5 shrink-0 text-terracotta" />
+            <span className="truncate font-label text-ink-muted">{spec.text}</span>
+          </div>
+        ))}
       </div>
 
-      {/* Card Body */}
-      <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
+      {/* ── Body ────────────────────────────────────────────────────────── */}
+      <div className="relative z-10 flex flex-1 flex-col justify-between gap-4 p-5 sm:p-6">
         <div className="space-y-3">
-          <p className="text-sm text-bark-muted leading-relaxed line-clamp-3">
-            {expedition.summary}
-          </p>
-
-          {/* Top 2 Highlights */}
-          <ul className="space-y-1.5 pt-1">
-            {expedition.highlights.slice(0, 2).map((h, i) => (
-              <li key={i} className="text-xs text-bark flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-terracotta mt-1.5 shrink-0" />
+          <p className="line-clamp-2 text-sm leading-relaxed text-ink-muted">{expedition.subtitle}</p>
+          <ul className="space-y-1.5">
+            {expedition.highlights.slice(0, 2).map((h) => (
+              <li key={h} className="flex items-start gap-2 text-xs text-ink">
+                <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-pos" />
                 <span className="line-clamp-1">{h}</span>
               </li>
             ))}
           </ul>
+          <LivePermitChip expeditionId={expedition.id} compact className="mt-1" />
         </div>
 
-        {/* Pricing + UWA Permit Transparency Box */}
-        <div className="pt-4 border-t border-canopy/10 space-y-4">
-          <div className="flex items-baseline justify-between gap-2">
+        <div className="space-y-3.5 border-t border-line/10 pt-4">
+          <div className="flex items-end justify-between gap-3">
             <div>
-              <span className="block text-[11px] font-mono-tech uppercase tracking-wider text-bark-subtle">
-                Expedition Package From
-              </span>
-              <div className="flex items-baseline gap-1.5">
-                <span className="font-mono-tech text-2xl font-bold text-canopy">
-                  ${expedition.basePriceUsd.toLocaleString()}
+              <span className="block font-label text-ink-subtle">Package from</span>
+              <div className="mt-0.5 flex items-baseline gap-1.5">
+                <span className="font-display text-2xl font-semibold tracking-tight text-heading">
+                  {money(expedition.basePriceUsd)}
                 </span>
-                <span className="text-xs text-bark-muted">/ guest</span>
+                <span className="text-xs text-ink-muted">/ guest</span>
               </div>
-            </div>
-
-            <div className="text-right">
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-acacia-light border border-acacia/30 text-[11px] font-mono-tech font-medium text-canopy">
-                <ShieldCheck className="w-3.5 h-3.5 text-acacia-dark shrink-0" />
-                {totalPermitUsd > 0
-                  ? `+ $${totalPermitUsd.toLocaleString()} UWA Permit`
-                  : 'Park Permits Included'}
+              <span className="mt-0.5 block font-label text-ink-subtle">
+                ≈ {money(Math.round(perDay))} per day
               </span>
-              <span className="block text-[11px] text-emerald-800 font-mono-tech mt-1">
-                Save ${expedition.greenSeasonDiscountUsd} in Green Season
+            </div>
+            <div className="space-y-1 text-right">
+              <span className="chip chip-gold !whitespace-nowrap">
+                <ShieldCheck className="h-3 w-3 text-acacia-dark" />
+                {totalPermitUsd > 0 ? `+${money(totalPermitUsd)} permit` : 'Permits included'}
+              </span>
+              <span className="block text-[0.68rem] font-semibold text-pos">
+                Green season from {money(greenSeasonFrom)}
               </span>
             </div>
           </div>
 
-          {/* Dual CTAs */}
-          <div className="grid grid-cols-2 gap-2.5">
-            <Link
-              href={`/expeditions/${expedition.slug}`}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg border border-canopy/20 hover:border-canopy text-canopy text-xs sm:text-sm font-semibold transition-colors"
-            >
-              <span>View Dossier</span>
-            </Link>
+          <div className="grid grid-cols-[1fr_auto] gap-2">
             <Link
               href={`/booking?expedition=${encodeURIComponent(expedition.id)}`}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-terracotta hover:bg-terracotta-hover text-white text-xs sm:text-sm font-semibold shadow-sm transition-colors"
+              className="btn btn-primary w-full !py-2.5 text-[0.82rem]"
             >
-              <span>Book / Dates</span>
-              <ArrowRight className="w-4 h-4" />
+              Check permits
+              <ArrowRight className="h-3.5 w-3.5" />
             </Link>
+            <button
+              type="button"
+              onClick={handleCompare}
+              aria-pressed={inCompare}
+              title={inCompare ? 'Remove from comparison' : 'Add to side-by-side comparison'}
+              className={`btn !px-3 !py-2.5 ${
+                inCompare ? 'btn-solid' : 'btn-outline'
+              }`}
+            >
+              <Scale className="h-3.5 w-3.5" />
+              {inCompare ? 'Added' : 'Compare'}
+            </button>
           </div>
         </div>
       </div>

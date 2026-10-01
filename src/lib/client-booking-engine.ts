@@ -1,6 +1,7 @@
 import { EXPEDITIONS, getExpeditionById } from '@/data/expeditions';
 import {
   AccommodationTier,
+  TravelerCompanion,
   BookingRecord,
   DayAvailability,
   PaymentGatewayMode,
@@ -188,6 +189,7 @@ export interface CreateBookingPayload {
     passportNumber?: string;
     fitnessLevel: string;
     dietaryOrMedicalNotes?: string;
+    companions?: TravelerCompanion[];
   };
 }
 
