@@ -346,31 +346,55 @@ export async function fetchBookingUniversal(params: {
   ref?: string;
   sessionId?: string;
   paymentIntent?: string;
+  allowDemoFallback?: boolean;
 }): Promise<BookingRecord | null> {
   const identifier = params.ref || params.sessionId || params.paymentIntent || '';
+  // Demo data is only available when a demo page explicitly requests it without
+  // a real booking reference. Never manufacture a paid reservation for a lookup.
+  const isDemoRequest =
+    params.allowDemoFallback === true &&
+    !params.ref &&
+    !params.paymentIntent &&
+    (!params.sessionId || params.sessionId === 'cs_test_jabali_demo');
 
-  try {
-    const q = new URLSearchParams();
-    if (params.ref) q.set('ref', params.ref);
-    if (params.sessionId) q.set('session_id', params.sessionId);
-    if (params.paymentIntent) q.set('payment_intent', params.paymentIntent);
+  if (!identifier && !isDemoRequest) return null;
 
-    const res = await fetch(`/api/bookings?${q.toString()}`);
-    if (res.ok) {
-      const data = await res.json();
-      if (data.booking) {
-        saveLocalBooking(data.booking);
-        return data.booking;
+  let lookupFailed = false;
+  if (!isDemoRequest) {
+    try {
+      const q = new URLSearchParams();
+      if (params.ref) q.set('ref', params.ref);
+      if (params.sessionId) q.set('session_id', params.sessionId);
+      if (params.paymentIntent) q.set('payment_intent', params.paymentIntent);
+
+      const res = await fetch(`/api/bookings?${q.toString()}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.booking) {
+          saveLocalBooking(data.booking);
+          return data.booking;
+        }
+      } else if (res.status !== 404) {
+        lookupFailed = true;
       }
+    } catch {
+      // Existing local bookings remain available on static hosts or offline.
+      lookupFailed = true;
     }
-  } catch {
-    // Static Pages fallback
   }
 
   const local = findLocalBooking(identifier);
   if (local) return local;
 
-  // If user navigated directly to /booking/success or /booking/checkout without prior state, synthesize a realistic demo record
+  if (!isDemoRequest) {
+    if (lookupFailed) {
+      throw new Error('Unable to check your booking. Please try again.');
+    }
+    return null;
+  }
+
+  // Keep the explicitly requested sandbox dossier available for its checkout
+  // redirect and later lookup, even when no server booking exists.
   const defaultExp = EXPEDITIONS[0];
   const pricing = calculateBookingPricing({
     expeditionId: defaultExp.id,
@@ -383,9 +407,9 @@ export async function fetchBookingUniversal(params: {
     addonIds: [],
   });
 
-  return {
+  return saveLocalBooking({
     id: 'bk_demo_fallback',
-    bookingReference: params.ref || 'JBL-2026-8419',
+    bookingReference: 'JBL-2026-DEMO',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     status: 'paid',
@@ -411,7 +435,7 @@ export async function fetchBookingUniversal(params: {
       nationality: 'United States',
       fitnessLevel: 'Moderate (Regular Hiker)',
     },
-  };
+  });
 }
 
 export async function triggerWebhookUniversal(params: {

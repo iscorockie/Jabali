@@ -9,15 +9,12 @@ import {
   X,
   Calendar,
   ArrowUpRight,
-  Search,
   Moon,
   Sun,
-  FileSearch,
   Phone,
   Sparkles,
   ShieldCheck,
 } from 'lucide-react';
-import PermitLookupModal from '@/components/PermitLookupModal';
 import { useSite, CURRENCIES, type CurrencyCode } from '@/components/providers/SiteProvider';
 
 const NAV_LINKS = [
@@ -43,9 +40,8 @@ function BrandMark() {
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { theme, toggleTheme, currency, setCurrency, wishlist, setPaletteOpen } = useSite();
+  const { theme, toggleTheme, currency, setCurrency, wishlist } = useSite();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [lookupOpen, setLookupOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [clock, setClock] = useState('');
 
@@ -172,20 +168,7 @@ export default function Navbar() {
             ))}
           </div>
 
-          <div className="hidden items-center gap-1.5 lg:flex">
-            <button
-              type="button"
-              onClick={() => setPaletteOpen(true)}
-              className="inline-flex items-center gap-2 rounded-full border border-line/20 bg-surface-raised px-3 py-2 text-xs font-medium text-ink-muted transition-all hover:border-terracotta/45 hover:text-heading"
-              aria-label="Search expeditions, parks and guides"
-            >
-              <Search className="h-3.5 w-3.5 text-terracotta" />
-              <span>Search</span>
-              <kbd className="rounded border border-line/20 px-1 font-label text-[0.6rem] text-ink-subtle">
-                ⌘K
-              </kbd>
-            </button>
-
+          <div className="hidden items-center gap-1.5 xl:flex">
             <label className="sr-only" htmlFor="nav-currency">
               Display currency
             </label>
@@ -228,15 +211,6 @@ export default function Navbar() {
               ) : null}
             </Link>
 
-            <button
-              type="button"
-              onClick={() => setLookupOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-line/20 bg-surface-raised px-3 py-2 font-label text-ink-muted transition-all hover:border-canopy hover:text-heading"
-            >
-              <FileSearch className="h-3.5 w-3.5 text-terracotta" />
-              My booking
-            </button>
-
             <Link
               href="/booking"
               className="btn btn-primary ml-1 !px-4 !py-2.5 text-[0.82rem]"
@@ -247,15 +221,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile triggers */}
-          <div className="flex items-center gap-2 lg:hidden">
-            <button
-              type="button"
-              onClick={() => setPaletteOpen(true)}
-              aria-label="Search"
-              className="grid h-10 w-10 place-items-center rounded-full border border-line/20 text-ink-muted"
-            >
-              <Search className="h-4 w-4" />
-            </button>
+          <div className="flex items-center gap-2 xl:hidden">
             <Link
               href="/booking"
               className="btn btn-primary !px-3.5 !py-2 text-xs"
@@ -266,6 +232,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setMobileOpen((o) => !o)}
+              aria-label="Toggle Menu"
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav"
               className="grid h-10 w-10 place-items-center rounded-full border border-line/20 text-heading transition-colors hover:bg-ink/5"
@@ -279,7 +246,7 @@ export default function Navbar() {
         {mobileOpen && (
           <div
             id="mobile-nav"
-            className="animate-slide-down border-t border-line/10 bg-surface-raised px-4 pb-6 pt-3 shadow-elevated lg:hidden"
+            className="animate-slide-down border-t border-line/10 bg-surface-raised px-4 pb-6 pt-3 shadow-elevated xl:hidden"
           >
             <div className="grid gap-1">
               {NAV_LINKS.map((link, i) => (
@@ -333,17 +300,6 @@ export default function Navbar() {
             </div>
 
             <div className="mt-4 grid gap-2 border-t border-line/10 pt-4">
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileOpen(false);
-                  setLookupOpen(true);
-                }}
-                className="btn btn-outline w-full !py-3 text-sm"
-              >
-                <FileSearch className="h-4 w-4 text-terracotta" />
-                My booking / permit docket
-              </button>
               <Link href="/contact" className="btn btn-solid w-full !py-3 text-sm">
                 <Sparkles className="h-4 w-4 text-acacia" />
                 Design a tailor-made safari
@@ -357,8 +313,6 @@ export default function Navbar() {
           </div>
         )}
       </nav>
-
-      {lookupOpen && <PermitLookupModal onClose={() => setLookupOpen(false)} />}
     </header>
   );
 }

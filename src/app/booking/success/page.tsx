@@ -38,6 +38,7 @@ function BookingSuccessContent() {
 
   const [booking, setBooking] = useState<BookingRecord | null>(null);
   const [loading, setLoading] = useState(true);
+  const [bookingError, setBookingError] = useState<string | null>(null);
   const [webhookResult, setWebhookResult] = useState<string | null>(null);
   const [testingWebhook, setTestingWebhook] = useState(false);
 
@@ -47,14 +48,33 @@ function BookingSuccessContent() {
   const [manageMessage, setManageMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchBookingUniversal({ ref, sessionId, paymentIntent })
+    let active = true;
+    setLoading(true);
+    setBooking(null);
+    setBookingError(null);
+
+    fetchBookingUniversal({
+      ref,
+      sessionId,
+      paymentIntent,
+      allowDemoFallback:
+        !ref && !paymentIntent && (!sessionId || sessionId === 'cs_test_jabali_demo'),
+    })
       .then((found) => {
-        if (found) {
-          setBooking(found);
-          setNewDepartureDate(found.departureDate);
-        }
+        if (!active) return;
+        setBooking(found);
+        if (found) setNewDepartureDate(found.departureDate);
       })
-      .finally(() => setLoading(false));
+      .catch(() => {
+        if (active) setBookingError('Unable to load your booking. Please try again.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, [ref, sessionId, paymentIntent]);
 
   const daysToDeparture = (() => {
@@ -188,7 +208,30 @@ function BookingSuccessContent() {
     );
   }
 
-  const isCancelled = booking?.status === 'cancelled';
+  if (!booking) {
+    return (
+      <div className="min-h-screen bg-surface py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-lg mx-auto rounded-2xl bg-surface-raised border border-line/15 p-8 text-center space-y-4">
+          <XCircle className="w-10 h-10 text-terracotta mx-auto" aria-hidden="true" />
+          <h1 className="font-display text-2xl font-semibold text-heading">
+            {bookingError ? 'Unable to Load Booking' : 'Booking Not Found'}
+          </h1>
+          <p role="alert" className="text-sm text-ink-muted">
+            {bookingError || 'We could not find a reservation with these details. Please check the reference in your confirmation email.'}
+          </p>
+          <Link
+            href="/booking"
+            className="inline-flex items-center gap-2 rounded-xl bg-canopy text-parchment px-5 py-3 text-sm font-semibold"
+          >
+            Return to Plan &amp; Book
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const isCancelled = booking.status === 'cancelled';
   const isInquiry =
     !isCancelled && (mode === 'inquiry' || booking?.status === 'inquiry_hold');
   const displayRef = booking?.bookingReference || ref || 'JBL-2026-8419';
@@ -197,6 +240,11 @@ function BookingSuccessContent() {
   return (
     <div className="min-h-screen bg-surface bg-topographic py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
+        {booking.id === 'bk_demo_fallback' && (
+          <p role="status" className="rounded-2xl bg-acacia-light border border-acacia/50 p-4 text-sm text-heading">
+            Sandbox preview only. No payment has been taken and no UWA permits have been allocated.
+          </p>
+        )}
         {/* Confirmation Header Card */}
         <div className="bg-canopy text-parchment rounded-3xl p-8 sm:p-12 shadow-elevated border border-acacia/30 relative overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 border-b border-white/15">

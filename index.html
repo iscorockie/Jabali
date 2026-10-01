@@ -216,6 +216,8 @@
     .hero h1 span { display: block; color: rgb(200 155 60); }
     .hero-lede { max-width: 40rem; font-size: 1.05rem; color: rgba(246,243,236,.85); margin-top: 1.5rem; }
     .hero-ctas { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.75rem; }
+    .hero-lookup { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-top: 1.25rem; font-size: .85rem; color: rgba(246,243,236,.75); }
+    .hero .kbd { border-color: rgba(246,243,236,.25); color: rgba(246,243,236,.75); }
     .hero-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 2rem 0 0; padding-top: 1.5rem; border-top: 1px solid rgba(246,243,236,.15); }
     .hero-stats dt { font-family: var(--font-sora); font-size: 1.6rem; font-weight: 600; color: #fff; letter-spacing: -.02em; }
     .hero-stats dd { margin: 0; font-size: .76rem; color: rgba(246,243,236,.65); }
@@ -755,7 +757,6 @@
           <a class="navlink" href="#faq">FAQ</a>
         </div>
         <div class="nav-actions">
-          <button class="search-btn js-only" type="button" id="open-palette" aria-label="Open command palette (⌘K)"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><span class="txt">Search</span><span class="kbd">⌘K</span></button>
           <label class="sr-only" for="currency-select">Currency</label>
           <select class="select js-only" id="currency-select" aria-label="Display currency">
             <option value="USD">USD $</option>
@@ -765,7 +766,6 @@
           </select>
           <button class="icon-btn theme-btn js-only" type="button" id="theme-toggle" aria-label="Toggle Night Field mode" title="Daylight / Night Field"><svg class="i sun" aria-hidden="true"><use href="#i-sun"/></svg><svg class="i moon" aria-hidden="true"><use href="#i-moon"/></svg></button>
           <button class="icon-btn js-only" type="button" id="wishlist-btn" aria-label="Saved shortlist"><svg class="i heart" aria-hidden="true"><use href="#i-heart"/></svg><span class="badge" id="wishlist-badge">0</span></button>
-          <button class="btn btn-ghost btn-sm desk-only" type="button" id="lookup-btn">My booking</button>
           <a class="btn btn-primary btn-sm desk-only" href="#booking">Book expedition</a>
           <button class="icon-btn menu-btn" type="button" id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><svg class="i" aria-hidden="true"><use href="#i-menu"/></svg></button>
         </div>
@@ -779,7 +779,6 @@
           <a class="navlink" href="#booking">Permit calendar</a>
           <a class="navlink" href="#faq">FAQ</a>
           <div class="row-actions">
-            <button class="btn btn-ghost btn-sm" type="button" data-action="lookup">My booking</button>
             <a class="btn btn-primary btn-sm" href="#booking">Book expedition</a>
           </div>
         </div>
@@ -806,6 +805,11 @@
             <div class="hero-ctas">
               <a class="btn btn-primary btn-lg" href="#booking"><svg class="i" aria-hidden="true"><use href="#i-calendar"/></svg> Check permits &amp; book <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>
               <a class="btn btn-onPanel btn-lg" href="#featured">Explore 6 expeditions</a>
+              <button class="btn btn-onPanel js-only" type="button" id="open-palette" aria-label="Search expeditions, parks and guides" aria-haspopup="dialog" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> Search expeditions <kbd class="kbd">⌘K</kbd></button>
+            </div>
+            <div class="hero-lookup js-only">
+              <span>Already booked?</span>
+              <button class="btn btn-onPanel btn-sm" type="button" id="lookup-btn" aria-haspopup="dialog" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-file"/></svg> My Booking / Permit</button>
             </div>
             <dl class="hero-stats">
               <div><dt>98.6%</dt><dd>Primate sighting success</dd></div>
@@ -1765,7 +1769,7 @@
       m.setAttribute('aria-label', label || 'Dialog'); m.classList.add('open'); document.body.style.overflow = 'hidden';
       var first = $('.modal-close', p); if (first) first.focus();
     }
-    function closeModal() { var m = $('#modal'); if (!m || !m.classList.contains('open')) return; m.classList.remove('open'); document.body.style.overflow = ''; if (state.lastFocus && state.lastFocus.focus) state.lastFocus.focus(); }
+    function closeModal() { var m = $('#modal'); if (!m || !m.classList.contains('open')) return; $('#lookup-btn').setAttribute('aria-expanded', 'false'); m.classList.remove('open'); document.body.style.overflow = ''; if (state.lastFocus && state.lastFocus.focus) state.lastFocus.focus(); }
     function openExpedition(id) {
       var e = byId(id), st = quarterStats(e);
       var html = '<div class="modal-hero"><img src="' + e.image + '" alt="" /><div class="caption"><span class="chip chip-gold">' + esc(e.badge) + '</span><h3 id="modal-title">' + esc(e.title) + '</h3><p>' + esc(e.subtitle) + '</p></div></div>' +
@@ -1806,9 +1810,10 @@
     }
     function openLookup(prefill) {
       var html = '<div class="modal-body"><div><span class="eyebrow">My booking</span><h3 id="modal-title" style="font-size:1.4rem;margin-top:.3rem">Find a permit hold on this device</h3><p class="muted" style="font-size:.9rem;margin-top:.5rem">Enter the JBL booking reference, UWA docket number or the lead guest email. On the full deployment this also queries the server-side ledger and Stripe.</p></div>' +
-        '<form id="lookup-form" style="display:flex;gap:.5rem;flex-wrap:wrap"><label class="sr-only" for="lookup-q">Reference or email</label><input class="input" id="lookup-q" type="text" placeholder="JBL-2026-1234 or you@example.com" style="flex:1;min-width:14rem;border-color:rgb(var(--field-line));background:rgb(var(--field));color:inherit" value="' + esc(prefill || '') + '" /><button class="btn btn-primary" type="submit">' + ico('search') + ' Look up</button></form>' +
+        '<form id="lookup-form" style="display:flex;gap:.5rem;flex-wrap:wrap"><label class="sr-only" for="lookup-q">Reference or email</label><input class="input" id="lookup-q" type="text" required autocomplete="off" placeholder="JBL-2026-1234 or you@example.com" style="flex:1 1 14rem;min-width:0;border-color:rgb(var(--field-line));background:rgb(var(--field));color:inherit" value="' + esc(prefill || '') + '" /><button class="btn btn-primary" type="submit">' + ico('search') + ' Look up</button></form>' +
         '<div class="lookup-result" id="lookup-result"></div></div>';
       openModal(html, 'Find my booking');
+      $('#lookup-btn').setAttribute('aria-expanded', 'true');
       var q = $('#lookup-q'); if (q) { q.focus(); if (prefill) runLookup(prefill); }
     }
     function runLookup(qRaw) {
@@ -1859,8 +1864,8 @@
       list.innerHTML = html;
       var sel = $('.pal-item[aria-selected="true"]', list); if (sel && sel.scrollIntoView) sel.scrollIntoView({ block: 'nearest' });
     }
-    function openPalette() { var p = $('#palette'); if (!p) return; state.lastFocus = document.activeElement; p.classList.add('open'); document.body.style.overflow = 'hidden'; var q = $('#pal-query'); q.value = ''; state.palSel = 0; renderPalette(); q.focus(); }
-    function closePalette() { var p = $('#palette'); if (!p || !p.classList.contains('open')) return; p.classList.remove('open'); document.body.style.overflow = ''; if (state.lastFocus && state.lastFocus.focus) state.lastFocus.focus(); }
+    function openPalette() { var p = $('#palette'); if (!p) return; $('#open-palette').setAttribute('aria-expanded', 'true'); state.lastFocus = document.activeElement; p.classList.add('open'); document.body.style.overflow = 'hidden'; var q = $('#pal-query'); q.value = ''; state.palSel = 0; renderPalette(); q.focus(); }
+    function closePalette() { var p = $('#palette'); if (!p || !p.classList.contains('open')) return; $('#open-palette').setAttribute('aria-expanded', 'false'); p.classList.remove('open'); document.body.style.overflow = ''; if (state.lastFocus && state.lastFocus.focus) state.lastFocus.focus(); }
     function runPalette(i) { var e = state.palItems[i]; if (!e) return; closePalette(); setTimeout(e.run, 30); }
     function showSaved() { if (!state.wishlist.length) { toast('info', 'Your shortlist is empty', 'Tap the heart on any expedition card to save it here.'); scrollToEl('#featured'); return; } state.filter = 'saved'; renderCatalogue(); scrollToEl('#featured'); }
 
@@ -1912,7 +1917,7 @@
         else if (f.id === 'lookup-form') { ev.preventDefault(); runLookup($('#lookup-q').value); }
         else if (f.id === 'newsletter') { ev.preventDefault(); var em = ($('#nl-email').value || '').trim(), msg = $('#nl-msg'); if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(em)) { msg.className = 'foot-msg err'; msg.textContent = 'Enter a valid email so we can send permit alerts.'; return; } msg.className = 'foot-msg ok'; msg.textContent = 'Subscribed to Jabali Field Dispatches & UWA Permit Alerts.'; $('#nl-email').value = ''; toast('success', 'Field Dispatches subscribed', 'We will email you when gorilla permit quotas open in your window.'); }
       });
-      document.addEventListener('input', function (ev) { if (ev.target.id === 'pal-query') { state.palSel = 0; renderPalette(); } });
+      document.addEventListener('input', function (ev) { if (ev.target.id === 'pal-query') { state.palSel = 0; renderPalette(); } else if (ev.target.id === 'lookup-q') { $('#lookup-result').innerHTML = ''; } });
       document.addEventListener('keydown', function (ev) {
         if ((ev.metaKey || ev.ctrlKey) && (ev.key === 'k' || ev.key === 'K')) { ev.preventDefault(); if ($('#palette').classList.contains('open')) closePalette(); else { closeModal(); openPalette(); } return; }
         if (ev.key === 'Escape') { if ($('#palette').classList.contains('open')) closePalette(); else if ($('#modal').classList.contains('open')) closeModal(); else { var mm = $('#mobile-menu'); if (mm && mm.classList.contains('open')) toggleMenu(false); } return; }

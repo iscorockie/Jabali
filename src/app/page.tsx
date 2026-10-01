@@ -22,6 +22,8 @@ import { listBookings, getMonthAvailability } from '@/lib/booking-store';
 import { withBasePath } from '@/lib/base-path';
 import ExpeditionCard from '@/components/ExpeditionCard';
 import HeroQuickBookingBar from '@/components/HeroQuickBookingBar';
+import HeroPermitLookupButton from '@/components/HeroPermitLookupButton';
+import HeroSearchButton from '@/components/HeroSearchButton';
 import InteractiveUgandaMap from '@/components/InteractiveUgandaMap';
 import TestimonialCarousel from '@/components/TestimonialCarousel';
 import FaqAccordion from '@/components/FaqAccordion';
@@ -136,6 +138,12 @@ export default function HomePage() {
                 <Link href="/expeditions" className="btn btn-onPanel btn-lg">
                   Explore 6 expeditions
                 </Link>
+                <HeroSearchButton />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-sm text-parchment/75">Already booked?</span>
+                <HeroPermitLookupButton />
               </div>
 
               <dl className="grid max-w-2xl grid-cols-2 gap-x-6 gap-y-4 border-t border-white/15 pt-6 sm:grid-cols-4">
