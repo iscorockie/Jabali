@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-fraunces: 'Fraunces', 'Playfair Display', Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-jakarta: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-jetbrains: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #F6F3EC;
+  color: #181A17;
+}
+
+body {
+  font-family: var(--font-jakarta);
+  background-color: #F6F3EC;
+  color: #181A17;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-fraunces);
+}
+
+.font-mono-tech {
+  font-family: var(--font-jetbrains);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Subtle topographic contour pattern overlay */
+.bg-topographic {
+  background-image: radial-gradient(circle at 20% 35%, rgba(200, 155, 60, 0.07) 0%, transparent 50%),
+    radial-gradient(circle at 80% 75%, rgba(184, 83, 46, 0.06) 0%, transparent 50%),
+    repeating-radial-gradient(
+      circle at 15% 85%,
+      transparent 0,
+      transparent 28px,
+      rgba(17, 34, 24, 0.025) 29px,
+      transparent 30px
+    );
+}
+
+.bg-canopy-topographic {
+  background-color: #112218;
+  background-image: radial-gradient(circle at 85% 15%, rgba(200, 155, 60, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 15% 85%, rgba(58, 94, 74, 0.25) 0%, transparent 55%),
+    repeating-radial-gradient(
+      circle at 80% 20%,
+      transparent 0,
+      transparent 36px,
+      rgba(246, 243, 236, 0.03) 37px,
+      transparent 38px
+    );
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
