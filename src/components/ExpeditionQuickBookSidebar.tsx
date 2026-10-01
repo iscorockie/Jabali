@@ -169,7 +169,7 @@ export default function ExpeditionQuickBookSidebar({
                     ✓ {selectedDayInfo.permitsRemaining} permits available
                   </span>
                 ) : (
-                  <span className="text-red-700 font-semibold">
+                  <span className="text-neg font-semibold">
                     Sold out — choose adjacent date
                   </span>
                 )}

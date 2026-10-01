@@ -158,12 +158,12 @@ function BookingSuccessContent() {
               <div
                 className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${
                   isCancelled
-                    ? 'bg-red-500/20 border border-red-400/40'
+                    ? 'bg-neg/20 border border-neg/35'
                     : 'bg-pos-soft/20 border border-pos/30'
                 }`}
               >
                 {isCancelled ? (
-                  <XCircle className="w-8 h-8 text-red-400" />
+                  <XCircle className="w-8 h-8 text-neg" />
                 ) : (
                   <CheckCircle2 className="w-8 h-8 text-emerald-400" />
                 )}
@@ -396,7 +396,7 @@ function BookingSuccessContent() {
                     type="button"
                     disabled={managing}
                     onClick={handleCancelBooking}
-                    className="px-4 py-2.5 rounded-xl border border-red-300 hover:bg-red-50 text-red-700 text-xs font-semibold transition-all"
+                    className="px-4 py-2.5 rounded-xl border border-neg/35 hover:bg-neg-soft text-neg text-xs font-semibold transition-all"
                   >
                     Cancel &amp; Release Permits
                   </button>

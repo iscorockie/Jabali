@@ -18,6 +18,11 @@ import {
   createPaymentIntentUniversal,
 } from '@/lib/client-booking-engine';
 import StripeEmbeddedPaymentModal from '@/components/StripeEmbeddedPaymentModal';
+import BookingProgressRail from '@/components/BookingProgressRail';
+import { AvailabilitySkeleton } from '@/components/ui/Skeleton';
+import { useSite, CURRENCIES } from '@/components/providers/SiteProvider';
+import { downloadFile, formatDateShort } from '@/lib/format';
+import Reveal from '@/components/ui/Reveal';
 import {
   Calendar,
   Users,
@@ -34,6 +39,11 @@ import {
   Briefcase,
   FileText,
   HelpCircle,
+  Download,
+  UserPlus,
+  Trash2,
+  ListChecks,
+  RotateCcw,
 } from 'lucide-react';
 
 const MONTH_NAMES = [
@@ -50,6 +60,9 @@ const MONTH_NAMES = [
   'November',
   'December',
 ];
+
+const DRAFT_KEY = 'jabali_booking_draft_v1';
+const GEAR_KEY = 'jabali_packing_checklist_v1';
 
 const PACKING_ITEMS = [
   { id: 'boots', item: 'Waterproof ankle-high hiking boots (broken in before Bwindi)' },
@@ -96,25 +109,12 @@ function BookingEngineContent() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentGatewayMode>(
     initialMode as PaymentGatewayMode
   );
-  const [displayCurrency, setDisplayCurrency] = useState<'USD' | 'EUR' | 'GBP' | 'UGX'>('USD');
-
-  const currencyInfo = useMemo(() => {
-    switch (displayCurrency) {
-      case 'EUR':
-        return { symbol: '€', rate: 0.92, code: 'EUR' };
-      case 'GBP':
-        return { symbol: '£', rate: 0.78, code: 'GBP' };
-      case 'UGX':
-        return { symbol: 'USh ', rate: 3720, code: 'UGX' };
-      default:
-        return { symbol: '$', rate: 1, code: 'USD' };
-    }
-  }, [displayCurrency]);
-
-  const formatAmount = (usd: number) => {
-    const converted = Math.round(usd * currencyInfo.rate);
-    return `${currencyInfo.symbol}${converted.toLocaleString()}`;
-  };
+  /* Currency is global (navbar + booking rail share it) so quotes stay consistent
+      across the whole site and persist between visits. */
+  const { currency: displayCurrency, setCurrency: setDisplayCurrency, money: formatMoney, pushToast } =
+    useSite();
+  const currencyInfo = CURRENCIES[displayCurrency];
+  const formatAmount = (usd: number) => formatMoney(usd);
 
   // Guest Manifest State
   const [fullName, setFullName] = useState('Dr. Clara Reynolds');
@@ -136,11 +136,20 @@ function BookingEngineContent() {
     mode: string;
   } | null>(null);
 
-  // Interactive Packing List State
+  // Interactive Packing List State (persisted — packing happens over days)
   const [checkedGear, setCheckedGear] = useState<Record<string, boolean>>({
     boots: true,
     yellowfever: true,
   });
+
+  // Travelling party manifest — UWA permits are issued against named passports
+  type Companion = { fullName: string; passportNumber: string; nationality: string; dateOfBirth: string; notes: string };
+  const [companions, setCompanions] = useState<Companion[]>([]);
+
+  // Field-level validation + draft restoration
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [draftRestored, setDraftRestored] = useState(false);
+  const draftReady = React.useRef(false);
 
   const selectedExpedition = useMemo(
     () => getExpeditionById(expeditionId) || EXPEDITIONS[0],
@@ -202,6 +211,203 @@ function BookingEngineContent() {
     addonIds,
   ]);
 
+  /* ── Draft persistence: restore once (only when arriving without deep-linked
+       expedition params), then autosave every meaningful field change. ───── */
+  useEffect(() => {
+    const hasParams =
+      searchParams.get('expedition') || searchParams.get('date') || searchParams.get('guests');
+    if (hasParams) {
+      draftReady.current = true;
+      return;
+    }
+    try {
+      const raw = window.localStorage.getItem(DRAFT_KEY);
+      if (!raw) {
+        draftReady.current = true;
+        return;
+      }
+      const draft = JSON.parse(raw);
+      if (draft && typeof draft === 'object') {
+        if (draft.expeditionId && getExpeditionById(draft.expeditionId)) setExpeditionId(draft.expeditionId);
+        if (draft.departureDate) setDepartureDate(draft.departureDate);
+        if (draft.guests) setGuests(draft.guests);
+        if (draft.safariStyle) setSafariStyle(draft.safariStyle);
+        if (draft.accommodationTier) setAccommodationTier(draft.accommodationTier);
+        if (draft.residencyStatus) setResidencyStatus(draft.residencyStatus);
+        if (draft.paymentPlan) setPaymentPlan(draft.paymentPlan);
+        if (Array.isArray(draft.addonIds)) setAddonIds(draft.addonIds);
+        if (Array.isArray(draft.companions)) setCompanions(draft.companions);
+        const lg = draft.leadGuest || {};
+        if (lg.fullName) setFullName(lg.fullName);
+        if (lg.email) setEmail(lg.email);
+        if (lg.phone) setPhone(lg.phone);
+        if (lg.nationality) setNationality(lg.nationality);
+        if (lg.passportNumber) setPassportNumber(lg.passportNumber);
+        if (lg.fitnessLevel) setFitnessLevel(lg.fitnessLevel);
+        if (lg.dietaryOrMedicalNotes) setDietaryOrMedicalNotes(lg.dietaryOrMedicalNotes);
+        setDraftRestored(true);
+      }
+    } catch {
+      /* ignore malformed drafts */
+    }
+    draftReady.current = true;
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (!draftReady.current) return;
+    const id = window.setTimeout(() => {
+      try {
+        window.localStorage.setItem(
+          DRAFT_KEY,
+          JSON.stringify({
+            expeditionId,
+            departureDate,
+            guests,
+            safariStyle,
+            accommodationTier,
+            residencyStatus,
+            paymentPlan,
+            addonIds,
+            companions,
+            leadGuest: {
+              fullName,
+              email,
+              phone,
+              nationality,
+              passportNumber,
+              fitnessLevel,
+              dietaryOrMedicalNotes,
+            },
+            savedAt: new Date().toISOString(),
+          })
+        );
+      } catch {
+        /* quota / private mode */
+      }
+    }, 400);
+    return () => window.clearTimeout(id);
+  }, [
+    expeditionId,
+    departureDate,
+    guests,
+    safariStyle,
+    accommodationTier,
+    residencyStatus,
+    paymentPlan,
+    addonIds,
+    companions,
+    fullName,
+    email,
+    phone,
+    nationality,
+    passportNumber,
+    fitnessLevel,
+    dietaryOrMedicalNotes,
+  ]);
+
+  const clearDraft = () => {
+    try {
+      window.localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      /* ignore */
+    }
+    setDraftRestored(false);
+    pushToast({ tone: 'info', title: 'Draft cleared', message: 'The configurator is back to defaults.' });
+  };
+
+  /* ── Packing checklist persistence ───────────────────────────────────── */
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(GEAR_KEY);
+      if (raw) setCheckedGear(JSON.parse(raw));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(GEAR_KEY, JSON.stringify(checkedGear));
+    } catch {
+      /* ignore */
+    }
+  }, [checkedGear]);
+
+  const gearDone = PACKING_ITEMS.filter((g) => checkedGear[g.id]).length;
+
+  const handleDownloadPackingList = () => {
+    const lines = [
+      `JABALI TRAILS AFRICA — RAINFOREST PACKING CHECKLIST`,
+      `Expedition: ${selectedExpedition.title} (${selectedExpedition.durationDays} days)`,
+      `Departure: ${departureDate}`,
+      ``,
+      ...PACKING_ITEMS.map((g) => `[${checkedGear[g.id] ? 'x' : ' '}] ${g.item}`),
+      ``,
+      `Packed ${gearDone}/${PACKING_ITEMS.length}. Questions? expeditions@jabalitrails.africa`,
+    ];
+    downloadFile(
+      `jabali-packing-checklist-${selectedExpedition.slug}.txt`,
+      lines.join('\r\n'),
+      'text/plain'
+    );
+    pushToast({ tone: 'success', title: 'Packing checklist downloaded', message: 'Print it or keep it on your phone.' });
+  };
+
+  /* ── Companion manifest helpers ──────────────────────────────────────── */
+  const addCompanion = () => {
+    if (companions.length >= 11) return;
+    setCompanions((prev) => [
+      ...prev,
+      { fullName: '', passportNumber: '', nationality: 'United States', dateOfBirth: '', notes: '' },
+    ]);
+  };
+
+  const updateCompanion = (index: number, patch: Partial<Companion>) =>
+    setCompanions((prev) => prev.map((c, i) => (i === index ? { ...c, ...patch } : c)));
+
+  const removeCompanion = (index: number) =>
+    setCompanions((prev) => prev.filter((_, i) => i !== index));
+
+  /* ── Validation: paint inline errors without rewriting every field ───── */
+  const manifestRequiresPassport =
+    selectedExpedition.gorillaPermitUsd + selectedExpedition.chimpPermitUsd > 0;
+
+  const validateManifest = () => {
+    const errors: Record<string, string> = {};
+    if (fullName.trim().length < 3)
+      errors['guest-name'] = 'Enter the lead traveler exactly as printed on the passport.';
+    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email.trim()))
+      errors['guest-email'] = 'Your permit dossier and receipt are sent here — check the address.';
+    if (phone.replace(/\D/g, '').length < 8)
+      errors['guest-phone'] = 'Add a reachable number with country code for field updates.';
+    if (manifestRequiresPassport && passportNumber.trim().length < 5)
+      errors['guest-passport'] = 'UWA registers permits against a passport number (5+ characters).';
+    if (nationality.trim().length < 3)
+      errors['guest-nationality'] = 'Residency pricing (FNR / FR / EAC) is derived from nationality.';
+    const namedParty = companions.filter((c) => c.fullName.trim().length > 1).length;
+    if (namedParty + 1 < guests)
+      errors['guest-companions'] = `Add ${guests - namedParty - 1} more traveler name${
+        guests - namedParty - 1 === 1 ? '' : 's'
+      } — every permit must be issued to a named person.`;
+    return errors;
+  };
+
+  useEffect(() => {
+    document.querySelectorAll('[data-jb-error]').forEach((node) => node.remove());
+    document.querySelectorAll('.field-error').forEach((node) => node.classList.remove('field-error'));
+    Object.entries(fieldErrors).forEach(([id, message]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('field-error');
+      el.setAttribute('aria-invalid', 'true');
+      const note = document.createElement('p');
+      note.setAttribute('data-jb-error', 'true');
+      note.className = 'mt-1.5 text-[0.72rem] font-medium leading-snug text-neg';
+      note.textContent = message;
+      el.insertAdjacentElement('afterend', note);
+    });
+  }, [fieldErrors, guests]);
+
   const handleToggleAddon = (id: string) => {
     setAddonIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
@@ -232,8 +438,26 @@ function BookingEngineContent() {
 
   const handleCompleteBooking = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
+    setSubmitting(false);
     setSubmitError(null);
+
+    const errors = validateManifest();
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      const firstKey = Object.keys(errors)[0];
+      const node = document.getElementById(firstKey);
+      node?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      (node as HTMLInputElement | null)?.focus?.({ preventScroll: true });
+      pushToast({
+        tone: 'warn',
+        title: 'A few details still need attention',
+        message: `${Object.keys(errors).length} field${Object.keys(errors).length > 1 ? 's' : ''} to fix before we can hold your permits.`,
+      });
+      return;
+    }
+    setFieldErrors({});
+
+    setSubmitting(true);
 
     const payload = {
       expeditionId,
@@ -246,13 +470,22 @@ function BookingEngineContent() {
       addonIds,
       paymentMethod,
       leadGuest: {
-        fullName,
-        email,
-        phone,
+        fullName: fullName.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
         nationality,
-        passportNumber,
+        passportNumber: passportNumber.trim().toUpperCase(),
         fitnessLevel,
         dietaryOrMedicalNotes,
+        companions: companions
+          .filter((c) => c.fullName.trim().length > 1)
+          .map((c) => ({
+            fullName: c.fullName.trim(),
+            passportNumber: c.passportNumber.trim().toUpperCase(),
+            nationality: c.nationality,
+            dateOfBirth: c.dateOfBirth,
+            notes: c.notes,
+          })),
       },
     };
 
@@ -272,6 +505,21 @@ function BookingEngineContent() {
 
       // Stripe Hosted Checkout OR 48-Hour Inquiry Hold
       const data = await createCheckoutUniversal(payload);
+
+      try {
+        window.localStorage.removeItem(DRAFT_KEY);
+      } catch {
+        /* ignore */
+      }
+
+      pushToast({
+        tone: 'success',
+        title: paymentMethod === 'inquiry-hold' ? '48-hour permit hold requested' : 'Quote secured — complete payment',
+        message:
+          paymentMethod === 'inquiry-hold'
+            ? `Reference ${data.bookingReference}. Our Kampala desk replies within a few hours.`
+            : `Docket ${data.bookingReference} is staged with UWA. Pay to lock your sector.`,
+      });
 
       if (data.checkoutUrl.startsWith('http')) {
         window.location.href = data.checkoutUrl;
@@ -319,17 +567,84 @@ function BookingEngineContent() {
         </div>
       </section>
 
+      {/* Progress rail — jump between configurator steps */}
+      <BookingProgressRail
+        gearDone={gearDone}
+        gearTotal={PACKING_ITEMS.length}
+        steps={[
+          {
+            id: 'step-1',
+            label: 'Expedition & date',
+            done: Boolean(departureDate && selectedDayInfo && selectedDayInfo.status !== 'sold-out'),
+          },
+          {
+            id: 'step-2',
+            label: 'Tier & add-ons',
+            done:
+              addonIds.length > 0 ||
+              safariStyle === 'private' ||
+              accommodationTier === 'luxury',
+          },
+          {
+            id: 'step-3',
+            label: 'Travelers & payment',
+            done:
+              fullName.trim().length > 2 &&
+              /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email.trim()) &&
+              (!manifestRequiresPassport || passportNumber.trim().length >= 5),
+          },
+        ]}
+      />
+
+      {draftRestored ? (
+        <div className="wrap pt-5">
+          <div className="anim-rise flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-acacia/45 bg-acacia-light/70 px-4 py-3">
+            <p className="flex items-start gap-2.5 text-xs leading-relaxed text-ink">
+              <RotateCcw className="mt-0.5 h-4 w-4 shrink-0 text-acacia-dark" />
+              <span>
+                We restored your saved draft from this device — expedition, dates, add-ons and
+                traveler details are exactly where you left them. Nothing is submitted until you
+                pay or request a hold.
+              </span>
+            </p>
+            <div className="flex items-center gap-2">
+              <button type="button" onClick={clearDraft} className="btn btn-sm btn-outline">
+                Start fresh
+              </button>
+              <button
+                type="button"
+                onClick={() => setDraftRestored(false)}
+                className="btn btn-sm btn-solid"
+              >
+                Keep draft
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {/* Main Booking Engine Grid */}
       <section className="py-12 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <form
             onSubmit={handleCompleteBooking}
+            noValidate
+            onInput={(event) => {
+              const id = (event.target as HTMLElement).id;
+              if (id && fieldErrors[id]) {
+                setFieldErrors((prev) => {
+                  const next = { ...prev };
+                  delete next[id];
+                  return next;
+                });
+              }
+            }}
             className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start"
           >
             {/* LEFT 7 COLUMNS: 3-STEP INTERACTIVE CONFIGURATOR */}
             <div className="lg:col-span-7 space-y-8">
               {/* STEP 1: EXPEDITION & REAL-TIME PERMIT CALENDAR */}
-              <div className="bg-surface-raised rounded-2xl border border-line/15 p-6 sm:p-8 shadow-card space-y-6">
+              <div id="step-1" className="card scroll-mt-36 space-y-6 p-6 sm:p-8">
                 <div className="flex items-center justify-between border-b border-line/10 pb-4">
                   <div className="flex items-center gap-3">
                     <span className="w-8 h-8 rounded-lg bg-canopy text-acacia font-label text-sm font-bold flex items-center justify-center">
@@ -427,11 +742,11 @@ function BookingEngineContent() {
                       Available (4–8 Permits)
                     </span>
                     <span className="inline-flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-warn" />
                       Limited (1–3 Permits Left)
                     </span>
                     <span className="inline-flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-stone-300" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-ink/15" />
                       Sold Out / Locked
                     </span>
                     <span className="ml-auto text-pos font-semibold">
@@ -454,8 +769,7 @@ function BookingEngineContent() {
 
                     {loadingCalendar ? (
                       <div className="py-12 flex items-center justify-center gap-2 text-sm text-ink-muted">
-                        <Loader2 className="w-5 h-5 animate-spin text-terracotta" />
-                        <span>Syncing UWA sector permit inventory...</span>
+                        <AvailabilitySkeleton />
                       </div>
                     ) : (
                       <div className="grid grid-cols-7 gap-1.5 pt-2">
@@ -479,9 +793,9 @@ function BookingEngineContent() {
                                 isSelected
                                   ? 'bg-canopy text-parchment border-line ring-2 ring-terracotta shadow-sm'
                                   : isDisabled
-                                  ? 'bg-stone-100 text-stone-400 border-stone-200 cursor-not-allowed opacity-65'
+                                  ? 'bg-surface-sunk text-ink-subtle/70 border-line/10 cursor-not-allowed opacity-70'
                                   : dayObj.status === 'limited'
-                                  ? 'bg-amber-50/70 hover:bg-amber-100/80 text-heading border-amber-300'
+                                  ? 'bg-warn-soft/80 text-heading border-warn/45 hover:bg-warn-soft'
                                   : 'bg-pos-soft/50 hover:bg-pos-soft/70 text-heading border-pos/30'
                               }`}
                             >
@@ -494,7 +808,7 @@ function BookingEngineContent() {
                                     className={`text-[9px] font-label px-1 rounded ${
                                       isSelected
                                         ? 'bg-acacia text-canopy'
-                                        : 'bg-pos-soft text-white'
+                                        : 'bg-pos text-white'
                                     }`}
                                   >
                                     GREEN
@@ -506,14 +820,14 @@ function BookingEngineContent() {
                                 {dayObj.status === 'past' ? (
                                   <span>Past</span>
                                 ) : dayObj.status === 'sold-out' ? (
-                                  <span className="text-stone-400">Sold Out</span>
+                                  <span className="text-ink-subtle">Sold out</span>
                                 ) : (
                                   <span
                                     className={
                                       isSelected
                                         ? 'text-acacia font-semibold'
                                         : dayObj.status === 'limited'
-                                        ? 'text-amber-800 font-semibold'
+                                        ? 'text-warn font-semibold'
                                         : 'text-pos'
                                     }
                                   >
@@ -549,7 +863,7 @@ function BookingEngineContent() {
               </div>
 
               {/* STEP 2: GROUP SIZE, SAFARI STYLE, RESIDENCY & UPGRADES */}
-              <div className="bg-surface-raised rounded-2xl border border-line/15 p-6 sm:p-8 shadow-card space-y-6">
+              <div id="step-2" className="card scroll-mt-36 space-y-6 p-6 sm:p-8">
                 <div className="flex items-center gap-3 border-b border-line/10 pb-4">
                   <span className="w-8 h-8 rounded-lg bg-canopy text-acacia font-label text-sm font-bold flex items-center justify-center">
                     02
@@ -839,7 +1153,7 @@ function BookingEngineContent() {
               </div>
 
               {/* STEP 3: GUEST MANIFEST & STRIPE PAYMENT METHOD */}
-              <div className="bg-surface-raised rounded-2xl border border-line/15 p-6 sm:p-8 shadow-card space-y-6">
+              <div id="step-3" className="card scroll-mt-36 space-y-6 p-6 sm:p-8">
                 <div className="flex items-center gap-3 border-b border-line/10 pb-4">
                   <span className="w-8 h-8 rounded-lg bg-canopy text-acacia font-label text-sm font-bold flex items-center justify-center">
                     03
@@ -983,6 +1297,108 @@ function BookingEngineContent() {
                   />
                 </div>
 
+                {/* Travelling party manifest — one row per permit holder */}
+                <div className="space-y-3 rounded-2xl border border-line/15 bg-surface p-4 sm:p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="flex items-center gap-1.5 text-xs font-label uppercase tracking-wider text-terracotta">
+                        <Users className="h-3.5 w-3.5" />
+                        Travelling party
+                      </p>
+                      <h3 className="mt-1 font-display text-base font-semibold text-heading">
+                        Name every traveler on the permits
+                      </h3>
+                      <p className="mt-0.5 max-w-xl text-xs leading-relaxed text-ink-muted">
+                        UWA issues gorilla &amp; chimpanzee permits to named passports. Lead
+                        traveler {fullName.trim() || '(you)'} counts as guest 1 of {guests}.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={addCompanion}
+                      disabled={companions.length + 1 >= guests}
+                      className="btn btn-sm btn-outline"
+                    >
+                      <UserPlus className="h-3.5 w-3.5" />
+                      Add traveler
+                    </button>
+                  </div>
+
+                  {guests - 1 > companions.length ? (
+                    <p className="text-[0.7rem] font-label text-acacia-dark">
+                      {guests - 1 - companions.length} seat{guests - 1 - companions.length === 1 ? '' : 's'} still
+                      unassigned — you can finish this after checkout too.
+                    </p>
+                  ) : null}
+
+                  <div id="guest-companions" className="space-y-2.5">
+                    {companions.map((c, i) => (
+                      <div
+                        key={`${i}-${c.fullName}`}
+                        className="anim-rise grid grid-cols-1 gap-2.5 rounded-xl border border-line/12 bg-field p-3 sm:grid-cols-12"
+                      >
+                        <div className="sm:col-span-4">
+                          <label className="mb-1 block text-[0.65rem] font-label uppercase text-ink-subtle" htmlFor={`comp-name-${i}`}>
+                            Traveler {i + 2} full name
+                          </label>
+                          <input
+                            id={`comp-name-${i}`}
+                            value={c.fullName}
+                            onChange={(e) => updateCompanion(i, { fullName: e.target.value })}
+                            placeholder="As on passport"
+                            className="field !py-2 text-xs"
+                          />
+                        </div>
+                        <div className="sm:col-span-3">
+                          <label className="mb-1 block text-[0.65rem] font-label uppercase text-ink-subtle" htmlFor={`comp-pass-${i}`}>
+                            Passport
+                          </label>
+                          <input
+                            id={`comp-pass-${i}`}
+                            value={c.passportNumber}
+                            onChange={(e) => updateCompanion(i, { passportNumber: e.target.value })}
+                            placeholder="N8492019"
+                            className="field !py-2 font-label text-xs"
+                          />
+                        </div>
+                        <div className="sm:col-span-2">
+                          <label className="mb-1 block text-[0.65rem] font-label uppercase text-ink-subtle" htmlFor={`comp-nat-${i}`}>
+                            Nationality
+                          </label>
+                          <input
+                            id={`comp-nat-${i}`}
+                            value={c.nationality}
+                            onChange={(e) => updateCompanion(i, { nationality: e.target.value })}
+                            className="field !py-2 text-xs"
+                          />
+                        </div>
+                        <div className="sm:col-span-2">
+                          <label className="mb-1 block text-[0.65rem] font-label uppercase text-ink-subtle" htmlFor={`comp-dob-${i}`}>
+                            Date of birth
+                          </label>
+                          <input
+                            id={`comp-dob-${i}`}
+                            type="date"
+                            value={c.dateOfBirth}
+                            onChange={(e) => updateCompanion(i, { dateOfBirth: e.target.value })}
+                            className="field !py-2 text-xs"
+                          />
+                        </div>
+                        <div className="flex items-end justify-end sm:col-span-1">
+                          <button
+                            type="button"
+                            onClick={() => removeCompanion(i)}
+                            aria-label={`Remove traveler ${i + 2}`}
+                            className="btn btn-sm btn-outline !px-2.5 hover:!border-neg hover:!text-neg"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Payment Gateway Mode Selector */}
                 <div className="pt-2">
                   <span className="block text-xs font-label uppercase tracking-wider text-ink-muted mb-2">
@@ -1063,9 +1479,36 @@ function BookingEngineContent() {
                   </div>
                 </div>
 
+                {Object.keys(fieldErrors).length > 0 && (
+                  <div className="space-y-2 rounded-2xl border border-neg/35 bg-neg-soft p-4 text-xs text-neg">
+                    <p className="flex items-center gap-2 font-display text-sm font-semibold">
+                      <AlertCircle className="h-4 w-4 shrink-0" />
+                      {Object.keys(fieldErrors).length} field
+                      {Object.keys(fieldErrors).length > 1 ? 's' : ''} before we can hold permits
+                    </p>
+                    <ul className="list-inside list-disc space-y-1 leading-relaxed">
+                      {Object.entries(fieldErrors).map(([id, message]) => (
+                        <li key={id}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const node = document.getElementById(id);
+                              node?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                              (node as HTMLInputElement | null)?.focus({ preventScroll: true });
+                            }}
+                            className="underline decoration-dotted underline-offset-2 hover:no-underline"
+                          >
+                            {message}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 {submitError && (
-                  <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 shrink-0" />
+                  <div className="flex items-start gap-2 rounded-2xl border border-neg/35 bg-neg-soft p-4 text-xs leading-relaxed text-neg">
+                    <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                     <span>{submitError}</span>
                   </div>
                 )}
@@ -1073,7 +1516,7 @@ function BookingEngineContent() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-4 px-6 rounded-xl bg-terracotta hover:bg-terracotta-hover disabled:opacity-60 text-white font-semibold text-base shadow-elevated flex items-center justify-center gap-2.5 transition-all"
+                  className="btn btn-primary btn-lg w-full justify-center shadow-elevated"
                 >
                   {submitting ? (
                     <>
@@ -1090,8 +1533,8 @@ function BookingEngineContent() {
                       <Lock className="w-5 h-5" />
                       <span>
                         {paymentMethod === 'stripe-checkout'
-                          ? `Proceed to Stripe Checkout ($${pricing.payableNowUsd.toLocaleString()} USD)`
-                          : `Pay $${pricing.payableNowUsd.toLocaleString()} USD with Stripe Payment Element`}
+                          ? `Proceed to Stripe Checkout (${formatAmount(pricing.payableNowUsd)})`
+                          : `Pay ${formatAmount(pricing.payableNowUsd)} with Stripe Payment Element`}
                       </span>
                     </>
                   )}
@@ -1127,13 +1570,13 @@ function BookingEngineContent() {
                       <span className="block text-[10px] font-label uppercase text-ink-muted">
                         DEPARTURE
                       </span>
-                      <strong className="font-label text-heading">{departureDate}</strong>
+                      <strong className="font-label text-heading">{formatDateShort(departureDate)}</strong>
                     </div>
                     <div>
                       <span className="block text-[10px] font-label uppercase text-ink-muted">
                         RETURN
                       </span>
-                      <strong className="font-label text-heading">{pricing.endDate}</strong>
+                      <strong className="font-label text-heading">{formatDateShort(pricing.endDate)}</strong>
                     </div>
                     <div>
                       <span className="block text-[10px] font-label uppercase text-ink-muted">
@@ -1276,7 +1719,7 @@ function BookingEngineContent() {
                     <div className="flex justify-between items-baseline text-sm">
                       <span className="text-ink-muted">Total Expedition &amp; Permit Value</span>
                       <span className="font-label text-lg font-bold text-heading">
-                        {formatAmount(pricing.totalTripCostUsd)} {currencyInfo.code}
+                        {formatAmount(pricing.totalTripCostUsd)}
                       </span>
                     </div>
 
@@ -1292,7 +1735,7 @@ function BookingEngineContent() {
                         <span className="font-label text-2xl font-bold text-white">
                           {paymentMethod === 'inquiry-hold'
                             ? '$0 USD'
-                            : `${formatAmount(pricing.payableNowUsd)} ${currencyInfo.code}`}
+                            : formatAmount(pricing.payableNowUsd)}
                         </span>
                       </div>
                       {displayCurrency !== 'USD' && paymentMethod !== 'inquiry-hold' && (
@@ -1305,7 +1748,7 @@ function BookingEngineContent() {
                           <div className="text-[11px] text-parchment/75 font-label flex justify-between pt-1">
                             <span>Remaining Balance (60 days pre-safari):</span>
                             <span>
-                              {formatAmount(pricing.remainingBalanceUsd)} {currencyInfo.code}
+                              {formatAmount(pricing.remainingBalanceUsd)}
                             </span>
                           </div>
                         )}
@@ -1396,9 +1839,26 @@ function BookingEngineContent() {
                   </p>
                 </div>
               </div>
-              <span className="font-label text-xs px-3 py-1.5 rounded-lg bg-canopy text-acacia">
-                {Object.values(checkedGear).filter(Boolean).length} of {PACKING_ITEMS.length} Packed
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-label rounded-lg bg-canopy px-3 py-1.5 text-acacia">
+                  {gearDone} of {PACKING_ITEMS.length} packed · saved on this device
+                </span>
+                <button
+                  type="button"
+                  onClick={handleDownloadPackingList}
+                  className="btn btn-sm btn-outline"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  Download list
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-ink/10">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-terracotta to-pos transition-[width] duration-500"
+                style={{ width: `${Math.round((gearDone / PACKING_ITEMS.length) * 100)}%` }}
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

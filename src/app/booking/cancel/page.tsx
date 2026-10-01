@@ -19,8 +19,8 @@ function BookingCancelContent() {
   return (
     <div className="min-h-screen bg-surface bg-topographic py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto bg-surface-raised rounded-3xl border border-line/15 p-8 sm:p-12 shadow-elevated space-y-6">
-        <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
-          <AlertTriangle className="w-7 h-7 text-amber-700" />
+        <div className="w-14 h-14 rounded-2xl bg-warn/15 border border-warn/35 flex items-center justify-center">
+          <AlertTriangle className="w-7 h-7 text-warn" />
         </div>
 
         <div className="space-y-2">

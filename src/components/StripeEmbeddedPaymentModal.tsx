@@ -79,7 +79,7 @@ function LiveStripeElementsForm({
     <form onSubmit={handleSubmit} className="space-y-5">
       <PaymentElement />
       {errorMessage && (
-        <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
+        <div className="p-3 rounded-lg bg-neg-soft border border-neg/35 text-xs text-neg flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{errorMessage}</span>
         </div>
@@ -263,7 +263,7 @@ export default function StripeEmbeddedPaymentModal({
                   <button
                     type="button"
                     onClick={() => setCardNumber('4000 0000 0000 0002')}
-                    className="text-[11px] font-label px-2 py-0.5 rounded bg-red-100 text-red-900"
+                    className="text-[11px] font-label px-2 py-0.5 rounded bg-neg-soft text-neg"
                   >
                     Use 0002 (Decline Test)
                   </button>
@@ -311,7 +311,7 @@ export default function StripeEmbeddedPaymentModal({
               </div>
 
               {errorMsg && (
-                <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
+                <div className="p-3 rounded-lg bg-neg-soft border border-neg/35 text-xs text-neg flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{errorMsg}</span>
                 </div>

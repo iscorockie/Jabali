@@ -38,6 +38,17 @@ export async function POST(request: NextRequest) {
       passportNumber: body.leadGuest?.passportNumber || '',
       fitnessLevel: body.leadGuest?.fitnessLevel || 'Moderate (Regular Hiker)',
       dietaryOrMedicalNotes: body.leadGuest?.dietaryOrMedicalNotes || '',
+      companions: Array.isArray(body.leadGuest?.companions)
+        ? body.leadGuest.companions
+            .filter((c: { fullName?: string }) => (c?.fullName || '').trim().length > 1)
+            .map((c: Record<string, unknown>) => ({
+              fullName: String(c.fullName || '').trim(),
+              passportNumber: String(c.passportNumber || '').trim(),
+              nationality: String(c.nationality || '').trim(),
+              dateOfBirth: String(c.dateOfBirth || '').trim(),
+              notes: String(c.notes || '').trim(),
+            }))
+        : [],
     };
 
     const pricing = calculateBookingPricing({

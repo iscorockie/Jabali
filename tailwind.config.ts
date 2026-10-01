@@ -72,6 +72,10 @@ const config: Config = {
           DEFAULT: withVar('--bad'),
           soft: withVar('--bad-soft'),
         },
+        warn: {
+          DEFAULT: withVar('--warn'),
+          soft: withVar('--warn-soft'),
+        },
       },
       fontFamily: {
         display: ['var(--font-sora)', 'ui-sans-serif', 'system-ui', 'sans-serif'],

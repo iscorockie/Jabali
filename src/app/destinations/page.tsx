@@ -249,12 +249,12 @@ export default function DestinationsPage() {
               <span
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-semibold ${
                   currentMonthMeta.season === 'Peak Dry'
-                    ? 'bg-amber-100 text-amber-900'
+                    ? 'bg-warn-soft text-warn'
                     : 'bg-pos-soft text-pos'
                 }`}
               >
                 {currentMonthMeta.season === 'Peak Dry' ? (
-                  <Sun className="w-3.5 h-3.5 text-amber-600" />
+                  <Sun className="w-3.5 h-3.5 text-warn" />
                 ) : (
                   <CloudRain className="w-3.5 h-3.5 text-pos" />
                 )}

@@ -100,7 +100,7 @@ function StripeTestCheckoutContent() {
         {/* Top Stripe Test Mode Notice Banner */}
         <div className="mb-6 p-4 rounded-2xl bg-acacia-light border border-acacia/50 flex flex-wrap items-center justify-between gap-3 text-xs text-heading">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded bg-amber-600 text-white font-label font-bold uppercase">
+            <span className="px-2.5 py-0.5 rounded bg-warn text-white font-label font-bold uppercase">
               STRIPE TEST MODE
             </span>
             <span>
@@ -250,7 +250,7 @@ function StripeTestCheckoutContent() {
                     <button
                       type="button"
                       onClick={() => setCardNumber('4000 0000 0000 0002')}
-                      className="text-[10px] font-label px-2 py-0.5 rounded bg-red-100 text-red-900 font-semibold"
+                      className="text-[10px] font-label px-2 py-0.5 rounded bg-neg-soft text-neg font-semibold"
                     >
                       Fill 0002 (Decline)
                     </button>
@@ -322,7 +322,7 @@ function StripeTestCheckoutContent() {
               </div>
 
               {declineError && (
-                <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
+                <div className="p-3.5 rounded-xl bg-neg-soft border border-neg/35 text-xs text-neg flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{declineError}</span>
                 </div>

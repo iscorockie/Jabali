@@ -249,10 +249,10 @@ export default function AdminDashboardPage() {
                           b.status === 'paid'
                             ? 'bg-pos-soft text-pos'
                             : b.status === 'inquiry_hold'
-                            ? 'bg-amber-100 text-amber-900'
+                            ? 'bg-warn-soft text-warn'
                             : b.status === 'cancelled'
-                            ? 'bg-red-100 text-red-900'
-                            : 'bg-stone-200 text-stone-800'
+                            ? 'bg-neg-soft text-neg'
+                            : 'bg-surface-sunk text-ink-muted'
                         }`}
                       >
                         {b.status.toUpperCase()}
@@ -278,7 +278,7 @@ export default function AdminDashboardPage() {
                         <button
                           type="button"
                           onClick={() => handleCancelBooking(b.bookingReference)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-red-300 text-red-700 font-label text-[11px]"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-neg/35 text-neg font-label text-[11px]"
                         >
                           <span>Release Permits</span>
                         </button>
