@@ -5,6 +5,10 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { BookingRecord } from '@/lib/pricing';
 import {
+  fetchBookingUniversal,
+  triggerWebhookUniversal,
+} from '@/lib/client-booking-engine';
+import {
   CheckCircle2,
   ShieldCheck,
   Printer,
@@ -30,19 +34,12 @@ function BookingSuccessContent() {
   const [testingWebhook, setTestingWebhook] = useState(false);
 
   useEffect(() => {
-    const params = new URLSearchParams();
-    if (ref) params.set('ref', ref);
-    if (sessionId) params.set('session_id', sessionId);
-    if (paymentIntent) params.set('payment_intent', paymentIntent);
-
-    fetch(`/api/bookings?${params.toString()}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.booking) {
-          setBooking(data.booking);
+    fetchBookingUniversal({ ref, sessionId, paymentIntent })
+      .then((found) => {
+        if (found) {
+          setBooking(found);
         }
       })
-      .catch(() => {})
       .finally(() => setLoading(false));
   }, [ref, sessionId, paymentIntent]);
 
@@ -51,33 +48,18 @@ function BookingSuccessContent() {
     setWebhookResult(null);
     try {
       const bookingRef = booking?.bookingReference || ref || 'JBL-2026-DEMO';
-      const res = await fetch('/api/webhooks/stripe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: `evt_manual_verify_${Date.now()}`,
-          type: 'checkout.session.completed',
-          data: {
-            object: {
-              id: sessionId || booking?.stripeSessionId || 'cs_test_verified',
-              client_reference_id: bookingRef,
-              payment_status: 'paid',
-              metadata: { bookingReference: bookingRef },
-            },
-          },
-        }),
+      const json = await triggerWebhookUniversal({
+        bookingReference: bookingRef,
+        sessionId: sessionId || booking?.stripeSessionId || 'cs_test_verified',
+        eventType: 'checkout.session.completed',
       });
-      const json = await res.json();
       setWebhookResult(
         `Webhook 200 OK (${json.eventType}) processed at ${new Date(
           json.processedAt
         ).toLocaleTimeString()}`
       );
-      // Refresh booking status
-      const refreshed = await fetch(
-        `/api/bookings?ref=${encodeURIComponent(bookingRef)}`
-      ).then((r) => r.json());
-      if (refreshed.booking) setBooking(refreshed.booking);
+      const refreshed = await fetchBookingUniversal({ ref: bookingRef });
+      if (refreshed) setBooking(refreshed);
     } catch {
       setWebhookResult('Webhook verification failed');
     } finally {
@@ -96,8 +78,7 @@ function BookingSuccessContent() {
 
   const isInquiry = mode === 'inquiry' || booking?.status === 'inquiry_hold';
   const displayRef = booking?.bookingReference || ref || 'JBL-2026-8419';
-  const displayDocket =
-    booking?.uwaPermitDocketNumber || `UWA-BW-2026-${Math.floor(100000 + Math.random() * 900000)}`;
+  const displayDocket = booking?.uwaPermitDocketNumber || 'UWA-BW-2026-594820';
 
   return (
     <div className="min-h-screen bg-parchment bg-topographic py-12 sm:py-16 px-4 sm:px-6 lg:px-8">

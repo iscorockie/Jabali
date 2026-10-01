@@ -5,6 +5,10 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { BookingRecord } from '@/lib/pricing';
 import {
+  fetchBookingUniversal,
+  triggerWebhookUniversal,
+} from '@/lib/client-booking-engine';
+import {
   Lock,
   CreditCard,
   ShieldCheck,
@@ -31,20 +35,15 @@ function StripeTestCheckoutContent() {
   const [declineError, setDeclineError] = useState<string | null>(null);
 
   useEffect(() => {
-    const query = ref
-      ? `ref=${encodeURIComponent(ref)}`
-      : `session_id=${encodeURIComponent(sessionId)}`;
-    fetch(`/api/bookings?${query}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.booking) {
-          setBooking(data.booking);
-          if (data.booking.leadGuest?.fullName) {
-            setNameOnCard(data.booking.leadGuest.fullName.toUpperCase());
+    fetchBookingUniversal({ ref, sessionId })
+      .then((found) => {
+        if (found) {
+          setBooking(found);
+          if (found.leadGuest?.fullName) {
+            setNameOnCard(found.leadGuest.fullName.toUpperCase());
           }
         }
       })
-      .catch(() => {})
       .finally(() => setLoading(false));
   }, [ref, sessionId]);
 
@@ -64,32 +63,12 @@ function StripeTestCheckoutContent() {
     }
 
     try {
-      const bookingRef = booking?.bookingReference || ref;
+      const bookingRef = booking?.bookingReference || ref || 'JBL-2026-8419';
 
-      // Fire the official Stripe Webhook endpoint (`/api/webhooks/stripe`) with `checkout.session.completed`
-      await fetch('/api/webhooks/stripe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: `evt_test_${Date.now()}`,
-          object: 'event',
-          type: 'checkout.session.completed',
-          data: {
-            object: {
-              id: sessionId,
-              object: 'checkout.session',
-              payment_status: 'paid',
-              client_reference_id: bookingRef,
-              customer_email: booking?.leadGuest?.email || 'guest@example.com',
-              amount_total: (booking?.pricing?.payableNowUsd || 4250) * 100,
-              currency: 'usd',
-              metadata: {
-                bookingReference: bookingRef,
-                expeditionId: booking?.expeditionId || 'exp-bwindi-gorilla-5d',
-              },
-            },
-          },
-        }),
+      await triggerWebhookUniversal({
+        bookingReference: bookingRef,
+        sessionId,
+        eventType: 'checkout.session.completed',
       });
 
       router.push(

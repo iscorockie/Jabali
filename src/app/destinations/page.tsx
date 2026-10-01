@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { DESTINATIONS, EXPEDITIONS } from '@/data/expeditions';
+import { withBasePath } from '@/lib/base-path';
 import {
   MapPin,
   Compass,
@@ -25,7 +26,7 @@ export default function DestinationsPage() {
       <section className="relative bg-canopy text-parchment py-16 sm:py-24 overflow-hidden">
         <div className="absolute inset-0 opacity-35">
           <img
-            src="/images/queen-elizabeth-savannah.webp"
+            src={withBasePath('/images/queen-elizabeth-savannah.webp')}
             alt="Queen Elizabeth National Park Uganda savannah and crater lakes"
             className="w-full h-full object-cover"
           />

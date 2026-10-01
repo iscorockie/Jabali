@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { EXPEDITIONS } from '@/data/expeditions';
+import { withBasePath } from '@/lib/base-path';
 import ExpeditionCard from '@/components/ExpeditionCard';
 import {
   Compass,
@@ -53,7 +54,7 @@ export default function ExpeditionsPage() {
       <section className="relative bg-canopy text-parchment py-16 sm:py-24 overflow-hidden">
         <div className="absolute inset-0 opacity-30">
           <img
-            src="/images/bwindi-gorilla-family.jpg"
+            src={withBasePath('/images/bwindi-gorilla-family.jpg')}
             alt="Bwindi mountain gorilla family"
             className="w-full h-full object-cover"
           />

@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   Loader2,
 } from 'lucide-react';
+import { triggerWebhookUniversal } from '@/lib/client-booking-engine';
 
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
 const isRealPublishableKey =
@@ -138,25 +139,10 @@ export default function StripeEmbeddedPaymentModal({
     }
 
     try {
-      // Trigger webhook simulation for `payment_intent.succeeded`
-      await fetch('/api/webhooks/stripe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: `evt_test_${Date.now()}`,
-          type: 'payment_intent.succeeded',
-          data: {
-            object: {
-              id: paymentIntentId,
-              amount: payableNowUsd * 100,
-              currency: 'usd',
-              status: 'succeeded',
-              metadata: {
-                bookingReference,
-              },
-            },
-          },
-        }),
+      await triggerWebhookUniversal({
+        bookingReference,
+        paymentIntentId,
+        eventType: 'payment_intent.succeeded',
       });
 
       router.push(

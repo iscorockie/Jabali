@@ -12,6 +12,11 @@ import {
   SafariStyle,
   calculateBookingPricing,
 } from '@/lib/pricing';
+import {
+  fetchAvailabilityUniversal,
+  createCheckoutUniversal,
+  createPaymentIntentUniversal,
+} from '@/lib/client-booking-engine';
 import StripeEmbeddedPaymentModal from '@/components/StripeEmbeddedPaymentModal';
 import {
   Calendar,
@@ -123,36 +128,25 @@ function BookingEngineContent() {
     [expeditionId]
   );
 
-  // Fetch Real-Time Calendar Availability
+  // Fetch Real-Time Calendar Availability (Works on both Server API and Static GitHub Pages)
   useEffect(() => {
     let active = true;
     setLoadingCalendar(true);
-    fetch(
-      `/api/availability?expeditionId=${encodeURIComponent(
-        expeditionId
-      )}&year=${calendarYear}&month=${calendarMonth}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
+    fetchAvailabilityUniversal(expeditionId, calendarYear, calendarMonth)
+      .then((days) => {
         if (!active) return;
-        if (Array.isArray(data.days)) {
-          setAvailabilityDays(data.days);
-          // Ensure selected departureDate isn't sold out if in current month
-          const currentSelected = data.days.find(
-            (d: DayAvailability) => d.date === departureDate
+        setAvailabilityDays(days);
+        const currentSelected = days.find(
+          (d: DayAvailability) => d.date === departureDate
+        );
+        if (currentSelected && currentSelected.status === 'sold-out') {
+          const firstAvailable = days.find(
+            (d: DayAvailability) => d.status === 'available' || d.status === 'limited'
           );
-          if (currentSelected && currentSelected.status === 'sold-out') {
-            const firstAvailable = data.days.find(
-              (d: DayAvailability) => d.status === 'available' || d.status === 'limited'
-            );
-            if (firstAvailable) {
-              setDepartureDate(firstAvailable.date);
-            }
+          if (firstAvailable) {
+            setDepartureDate(firstAvailable.date);
           }
         }
-      })
-      .catch(() => {
-        // Ignore transient error
       })
       .finally(() => {
         if (active) setLoadingCalendar(false);
@@ -245,15 +239,7 @@ function BookingEngineContent() {
 
     try {
       if (paymentMethod === 'stripe-elements') {
-        const res = await fetch('/api/create-payment-intent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        const data = await res.json();
-        if (!res.ok || !data.clientSecret) {
-          throw new Error(data.error || 'Could not initialize Stripe Payment Element.');
-        }
+        const data = await createPaymentIntentUniversal(payload);
         setEmbeddedModalData({
           clientSecret: data.clientSecret,
           paymentIntentId: data.paymentIntentId,
@@ -266,15 +252,7 @@ function BookingEngineContent() {
       }
 
       // Stripe Hosted Checkout OR 48-Hour Inquiry Hold
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.checkoutUrl) {
-        throw new Error(data.error || 'Could not initialize Stripe Checkout session.');
-      }
+      const data = await createCheckoutUniversal(payload);
 
       if (data.checkoutUrl.startsWith('http')) {
         window.location.href = data.checkoutUrl;

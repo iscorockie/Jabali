@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   Loader2,
 } from 'lucide-react';
+import { submitInquiryUniversal } from '@/lib/client-booking-engine';
 
 const INTEREST_OPTIONS = [
   'Mountain Gorilla Trekking (Bwindi)',
@@ -53,23 +54,18 @@ export default function ContactPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await fetch('/api/inquiries', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName,
-          email,
-          phone,
-          country,
-          preferredMonth,
-          durationDays,
-          guests,
-          budgetPerPerson,
-          interests,
-          notes,
-        }),
+      const data = await submitInquiryUniversal({
+        fullName,
+        email,
+        phone,
+        country,
+        preferredMonth,
+        durationDays,
+        guests,
+        budgetPerPerson,
+        interests,
+        notes,
       });
-      const data = await res.json();
       setSubmittedRef(data.inquiryReference || 'JBL-INQ-2026-9042');
     } catch {
       setSubmittedRef('JBL-INQ-2026-9042');

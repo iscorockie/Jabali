@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { LEAD_GUIDES } from '@/data/expeditions';
+import { withBasePath } from '@/lib/base-path';
 import {
   Compass,
   HeartHandshake,
@@ -26,7 +27,7 @@ export default function AboutPage() {
       <section className="relative bg-canopy text-parchment py-16 sm:py-24 overflow-hidden">
         <div className="absolute inset-0 opacity-30">
           <img
-            src="/images/bwindi-gorilla-closeup.jpg"
+            src={withBasePath('/images/bwindi-gorilla-closeup.jpg')}
             alt="Mountain gorilla in Bwindi Impenetrable Forest"
             className="w-full h-full object-cover"
           />
@@ -86,24 +87,24 @@ export default function AboutPage() {
             <div className="lg:col-span-6 grid grid-cols-2 gap-4">
               <div className="space-y-4">
                 <img
-                  src="/images/bwindi-gorilla-rest.jpg"
+                  src={withBasePath('/images/bwindi-gorilla-rest.jpg')}
                   alt="Mountain gorilla resting in Bwindi"
                   className="rounded-2xl h-64 w-full object-cover shadow-card"
                 />
                 <img
-                  src="/images/kazinga-elephants.jpg"
+                  src={withBasePath('/images/kazinga-elephants.jpg')}
                   alt="Elephants on the Kazinga Channel"
                   className="rounded-2xl h-56 w-full object-cover shadow-card"
                 />
               </div>
               <div className="space-y-4 pt-6">
                 <img
-                  src="/images/safari-land-cruiser.jpg"
+                  src={withBasePath('/images/safari-land-cruiser.jpg')}
                   alt="Jabali 4x4 Safari Land Cruiser"
                   className="rounded-2xl h-56 w-full object-cover shadow-card"
                 />
                 <img
-                  src="/images/luxury-lodge.jpg"
+                  src={withBasePath('/images/luxury-lodge.jpg')}
                   alt="Eco lodge overlooking wildlife"
                   className="rounded-2xl h-64 w-full object-cover shadow-card"
                 />

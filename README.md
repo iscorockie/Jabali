@@ -142,7 +142,24 @@ Copy the resulting `whsec_...` signing secret into `STRIPE_WEBHOOK_SECRET` in `.
 
 ---
 
-## Deploying to Vercel
+## Deploying to Vercel or GitHub Pages / Cloudflare Pages
+
+### Option A: Deploy to GitHub Pages (Automatic via GitHub Actions)
+
+This repository includes a pre-configured GitHub Pages workflow at `.github/workflows/deploy-pages.yml` and a universal client+server booking engine (`src/lib/client-booking-engine.ts`) that works seamlessly on static hosts:
+
+1. In your GitHub repository, go to **Settings → Pages**.
+2. Under **Build and deployment → Source**, select **GitHub Actions**.
+3. Push to `main` (or `arena/01a0f714-jabali`) or trigger **Deploy Jabali Trails Africa to GitHub Pages** from the **Actions** tab.
+4. The workflow automatically configures `NEXT_PUBLIC_BASE_PATH` (e.g. `/Jabali`), runs `npm run build:pages` to generate `./out` with `.nojekyll`, and publishes the static site.
+
+To build the static Pages export locally (`./out`):
+
+```bash
+npm run build:pages
+```
+
+### Option B: Deploy to Vercel (Full Serverless + Stripe Webhooks)
 
 1. Push this repository to GitHub.
 2. Import the repository in [Vercel](https://vercel.com/new).
@@ -151,7 +168,7 @@ Copy the resulting `whsec_...` signing secret into `STRIPE_WEBHOOK_SECRET` in `.
    - `STRIPE_SECRET_KEY`
    - `STRIPE_WEBHOOK_SECRET`
    - `NEXT_PUBLIC_SITE_URL` (set to your production Vercel URL)
-4. Click **Deploy**.
+4. Click **Deploy** (Vercel automatically sets `VERCEL=1`, activating the serverless `/api/*` routes).
 
 ---
 

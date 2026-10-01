@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { EXPEDITIONS, DESTINATIONS, TESTIMONIALS, LEAD_GUIDES } from '@/data/expeditions';
+import { withBasePath } from '@/lib/base-path';
 import ExpeditionCard from '@/components/ExpeditionCard';
 import HeroQuickBookingBar from '@/components/HeroQuickBookingBar';
 import {
@@ -30,7 +31,7 @@ export default function HomePage() {
         {/* Background Image + Multi-Stop Gradient */}
         <div className="absolute inset-0 z-0">
           <img
-            src="/images/bwindi-silverback.jpg"
+            src={withBasePath('/images/bwindi-silverback.jpg')}
             alt="Silverback Mountain Gorilla in Bwindi Impenetrable National Park, Uganda"
             className="w-full h-full object-cover object-center scale-105"
           />
@@ -288,7 +289,7 @@ export default function HomePage() {
               <div className="col-span-7 space-y-4">
                 <div className="rounded-2xl overflow-hidden border border-white/15 shadow-elevated h-72 sm:h-80 relative">
                   <img
-                    src="/images/bwindi-gorilla-infant.jpg"
+                    src={withBasePath('/images/bwindi-gorilla-infant.jpg')}
                     alt="Infant mountain gorilla in Bwindi Impenetrable Forest"
                     className="w-full h-full object-cover"
                   />
@@ -315,7 +316,7 @@ export default function HomePage() {
                 </div>
                 <div className="rounded-2xl overflow-hidden border border-white/15 shadow-elevated h-64 sm:h-72 relative">
                   <img
-                    src="/images/safari-land-cruiser.jpg"
+                    src={withBasePath('/images/safari-land-cruiser.jpg')}
                     alt="Jabali custom 4x4 safari Land Cruiser in East Africa"
                     className="w-full h-full object-cover"
                   />
