@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { EXPEDITIONS, DESTINATIONS, TESTIMONIALS, LEAD_GUIDES } from '@/data/expeditions';
+import { listBookings, getMonthAvailability } from '@/lib/booking-store';
 import { withBasePath } from '@/lib/base-path';
 import ExpeditionCard from '@/components/ExpeditionCard';
 import HeroQuickBookingBar from '@/components/HeroQuickBookingBar';
@@ -20,8 +21,16 @@ import {
   FileCheck2,
 } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default function HomePage() {
   const featuredExpeditions = EXPEDITIONS.filter((e) => e.featured);
+  const activeBookings = listBookings();
+  const bwindiNovDays = getMonthAvailability(EXPEDITIONS[0].id, 2026, 11);
+  const bwindiNovTotalPermits = bwindiNovDays.reduce(
+    (sum, d) => sum + d.permitsRemaining,
+    0
+  );
 
   return (
     <div className="space-y-0">
@@ -98,10 +107,10 @@ export default function HomePage() {
               <FileCheck2 className="w-5 h-5 text-acacia shrink-0 mt-0.5" />
               <div>
                 <div className="font-mono-tech text-xs uppercase tracking-wider text-acacia">
-                  Direct UWA Permit Desk
+                  Direct UWA Permit Desk ({bwindiNovTotalPermits} Nov Permits Open)
                 </div>
                 <p className="text-xs text-parchment/80 mt-0.5">
-                  Real-time sector-matched Bwindi ($800) &amp; Kibale ($250) permits
+                  Real-time sector-matched Bwindi ($800) &amp; Kibale ($250) permits · {activeBookings.length} active dockets
                 </p>
               </div>
             </div>

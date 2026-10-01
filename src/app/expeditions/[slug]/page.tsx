@@ -1,24 +1,22 @@
 import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { EXPEDITIONS, getExpeditionBySlug } from '@/data/expeditions';
+import { getExpeditionBySlug } from '@/data/expeditions';
+import { getMonthAvailability } from '@/lib/booking-store';
 import ExpeditionQuickBookSidebar from '@/components/ExpeditionQuickBookSidebar';
+import ExpeditionInteractiveItinerary from '@/components/ExpeditionInteractiveItinerary';
 import {
   Calendar,
   Users,
   Mountain,
-  MapPin,
   CheckCircle2,
   XCircle,
   ArrowLeft,
   Sparkles,
+  ShieldCheck,
 } from 'lucide-react';
 
-export function generateStaticParams() {
-  return EXPEDITIONS.map((exp) => ({
-    slug: exp.slug,
-  }));
-}
+export const dynamic = 'force-dynamic';
 
 export default function ExpeditionDetailPage({
   params,
@@ -31,7 +29,11 @@ export default function ExpeditionDetailPage({
     notFound();
   }
 
-  const totalPermitUsd = expedition.gorillaPermitUsd + expedition.chimpPermitUsd;
+  // Live server-rendered permit telemetry for November 2026
+  const novAvailability = getMonthAvailability(expedition.id, 2026, 11);
+  const openNovDays = novAvailability.filter(
+    (d) => d.status !== 'sold-out' && d.permitsRemaining > 0
+  ).length;
 
   return (
     <div className="min-h-screen bg-parchment">
@@ -66,6 +68,10 @@ export default function ExpeditionDetailPage({
             <span className="px-3 py-1 rounded-full text-xs font-mono-tech bg-white/10 border border-white/15 text-acacia">
               {expedition.coordinates} · {expedition.primaryPark}
             </span>
+            <span className="px-3 py-1 rounded-full text-xs font-mono-tech bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Live UWA Ledger: {openNovDays} Open Nov 2026 Departure Dates
+            </span>
           </div>
 
           <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-semibold max-w-4xl leading-tight">
@@ -78,28 +84,36 @@ export default function ExpeditionDetailPage({
           {/* Telemetry Bar */}
           <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl">
             <div className="p-3.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
-              <div className="text-[11px] font-mono-tech uppercase text-parchment/70">Duration</div>
+              <div className="text-[11px] font-mono-tech uppercase text-parchment/70">
+                Duration
+              </div>
               <div className="font-mono-tech text-lg font-semibold text-white flex items-center gap-1.5 mt-0.5">
                 <Calendar className="w-4 h-4 text-acacia" />
                 {expedition.durationDays} Days / {expedition.durationDays - 1} Nights
               </div>
             </div>
             <div className="p-3.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
-              <div className="text-[11px] font-mono-tech uppercase text-parchment/70">Group Size</div>
+              <div className="text-[11px] font-mono-tech uppercase text-parchment/70">
+                Group Size
+              </div>
               <div className="font-mono-tech text-lg font-semibold text-white flex items-center gap-1.5 mt-0.5">
                 <Users className="w-4 h-4 text-acacia" />
                 Max {expedition.maxGroupSize} Guests
               </div>
             </div>
             <div className="p-3.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
-              <div className="text-[11px] font-mono-tech uppercase text-parchment/70">Physical Grade</div>
+              <div className="text-[11px] font-mono-tech uppercase text-parchment/70">
+                Physical Grade
+              </div>
               <div className="font-mono-tech text-lg font-semibold text-white flex items-center gap-1.5 mt-0.5">
                 <Mountain className="w-4 h-4 text-acacia" />
                 {expedition.difficulty}
               </div>
             </div>
             <div className="p-3.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
-              <div className="text-[11px] font-mono-tech uppercase text-parchment/70">Trekking Sector</div>
+              <div className="text-[11px] font-mono-tech uppercase text-parchment/70">
+                Trekking Sector
+              </div>
               <div className="font-mono-tech text-sm font-semibold text-acacia truncate mt-1">
                 {expedition.trekkingSector || 'Savannah & Rift'}
               </div>
@@ -144,56 +158,8 @@ export default function ExpeditionDetailPage({
                 </div>
               </div>
 
-              {/* Day-by-Day Itinerary */}
-              <div className="space-y-6">
-                <div>
-                  <span className="font-mono-tech text-xs uppercase tracking-widest text-terracotta font-semibold">
-                    Field Route &amp; Elevation Log
-                  </span>
-                  <h2 className="font-serif text-2xl sm:text-4xl font-semibold text-canopy mt-1">
-                    Day-by-Day Expedition Dossier
-                  </h2>
-                </div>
-
-                <div className="space-y-4">
-                  {expedition.itinerary.map((item) => (
-                    <div
-                      key={item.day}
-                      className="bg-parchment-light rounded-2xl p-6 border border-canopy/12 shadow-sm hover:border-canopy/30 transition-all"
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-canopy/10">
-                        <div className="flex items-center gap-3">
-                          <span className="px-3 py-1 rounded-lg bg-canopy text-acacia font-mono-tech text-xs font-bold">
-                            DAY {String(item.day).padStart(2, '0')}
-                          </span>
-                          <h3 className="font-serif text-lg sm:text-xl font-semibold text-canopy">
-                            {item.title}
-                          </h3>
-                        </div>
-                        <span className="font-mono-tech text-xs text-bark-muted bg-parchment-dark px-2.5 py-1 rounded-md">
-                          Alt: {item.altitude}
-                        </span>
-                      </div>
-
-                      <p className="text-sm text-bark-muted leading-relaxed mt-4">
-                        {item.description}
-                      </p>
-
-                      <div className="mt-4 pt-3 border-t border-canopy/8 flex flex-wrap items-center justify-between gap-3 text-xs text-bark">
-                        <div className="flex items-center gap-1.5">
-                          <MapPin className="w-3.5 h-3.5 text-terracotta" />
-                          <span>
-                            <strong>Sanctuary / Lodge:</strong> {item.accommodation}
-                          </span>
-                        </div>
-                        <div className="font-mono-tech text-bark-muted">
-                          Meals: <strong className="text-canopy">{item.meals}</strong>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {/* Interactive Day-by-Day Itinerary */}
+              <ExpeditionInteractiveItinerary expedition={expedition} />
 
               {/* Included & Excluded */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
